@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blowfish - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Blowfish</h1>
+            <p>Blowfish is a symmetric-key block cipher designed by Bruce Schneier in 1993. It's known for its speed, security, and variable key length, making it suitable for both software and hardware implementations.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>Blowfish is a Feistel network block cipher that operates on 64-bit blocks with variable key lengths from 32 to 448 bits. It uses a large number of subkeys and S-boxes generated from the key through a complex key schedule.</p>
+            
+            <div class="formula-box">
+                <strong>Key Features:</strong><br>
+                • Block size: 64 bits (8 bytes)<br>
+                • Key size: 32-448 bits (4-56 bytes)<br>
+                • Rounds: 16 Feistel network rounds<br>
+                • Modes: ECB, CBC, CFB, OFB, CTR<br>
+                • Key schedule: 4168 bytes of subkeys
+            </div>
+
+            <div class="example-box">
+                <h4>Blowfish Process:</h4>
+                <p><strong>Plaintext:</strong> 64-bit block</p>
+                <p><strong>Key Schedule:</strong> Generate 18 subkeys (P-array) + 4 S-boxes</p>
+                <p><strong>Process:</strong> Initial XOR → 16 Rounds → Final XOR</p>
+                <p><strong>Each Round:</strong> Left half → F-function → XOR with right half → Swap halves</p>
+                <p><strong>Output:</strong> 64-bit encrypted block</p>
+            </div>
+
+            <p><strong>Security:</strong> Blowfish has no known cryptanalytic attacks and is considered secure for most applications. However, it has been deprecated in favor of AES for new applications due to its smaller block size and the emergence of more efficient alternatives.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Blowfish</h2>
+            
+            <form id="blowfish-form">
+                <div class="form-group">
+                    <label for="key">Encryption Key:</label>
+                    <input type="text" id="key" value="SECRETKEY123" placeholder="Enter encryption key" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="key-size">Key Size (bits):</label>
+                    <select id="key-size">
+                        <option value="128">128 bits (16 bytes)</option>
+                        <option value="192">192 bits (24 bytes)</option>
+                        <option value="256">256 bits (32 bytes)</option>
+                        <option value="448">448 bits (56 bytes)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="generateKey()">🎲 Generate Random Key</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function generateRandomKey() {
+            const keySize = parseInt(document.getElementById('key-size').value);
+            const keyLength = keySize / 8;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+            let key = '';
+            
+            for (let i = 0; i < keyLength; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            document.getElementById('key').value = key;
+            
+            showResult(`
+                <h4>🎲 Random Blowfish Key Generated</h4>
+                <div class="result-content">
+                    <p>A new random ${keySize}-bit Blowfish key has been generated.</p>
+                    <p><strong>New Key:</strong> <code>${key}</code></p>
+                    <p><strong>Key Length:</strong> ${key.length} characters (${keySize} bits)</p>
+                    <p><em>💡 This key will be used for Blowfish encryption/decryption operations.</em></p>
+                </div>
+            `);
+        }
+
+        function encryptText() {
+            const plaintext = document.getElementById('plaintext').value;
+            const key = document.getElementById('key').value;
+            const keySize = parseInt(document.getElementById('key-size').value);
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext || !key) {
+                showResult('Please enter both key and text to encrypt');
+                return;
+            }
+            
+            if (key.length * 8 < keySize) {
+                showResult(`Key must be at least ${keySize/8} characters long for ${keySize}-bit encryption`);
+                return;
+            }
+            
+            // Simple Blowfish simulation (for educational purposes)
+            const encrypted = simulateBlowfishEncryption(plaintext, key, keySize);
+            
+            let resultHTML = `
+                <h4>🔐 Blowfish Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Key:</strong> <code>${key}</code></p>
+                    <p><strong>Key Size:</strong> ${keySize} bits</p>
+                    <p><strong>Encrypted Data:</strong> <code>${encrypted}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Blowfish Process (Simplified):</h5>
+                        <ol>
+                            <li>Convert plaintext to 64-bit blocks</li>
+                            <li>Generate key schedule (P-array + S-boxes)</li>
+                            <li>Apply initial XOR with P₁ and P₂</li>
+                            <li>For 16 rounds: Apply F-function and XOR operations</li>
+                            <li>Apply final XOR with P₁₇ and P₁₈</li>
+                            <li>Output encrypted 64-bit block</li>
+                        </ol>
+                        <p><em>💡 This is a simplified demonstration. Real Blowfish uses proper cryptographic operations.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value;
+            const key = document.getElementById('key').value;
+            const keySize = parseInt(document.getElementById('key-size').value);
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext || !key) {
+                showResult('Please enter both key and encrypted text to decrypt');
+                return;
+            }
+            
+            if (key.length * 8 < keySize) {
+                showResult(`Key must be at least ${keySize/8} characters long for ${keySize}-bit decryption`);
+                return;
+            }
+            
+            // Simple Blowfish decryption simulation (for educational purposes)
+            const decrypted = simulateBlowfishDecryption(ciphertext, key, keySize);
+            
+            let resultHTML = `
+                <h4>🔓 Blowfish Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Key:</strong> <code>${key}</code></p>
+                    <p><strong>Key Size:</strong> ${keySize} bits</p>
+                    <p><strong>Decrypted Data:</strong> <code>${decrypted}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Blowfish Decryption Process (Simplified):</h5>
+                        <ol>
+                            <li>Take encrypted 64-bit block</li>
+                            <li>Generate same key schedule (P-array + S-boxes)</li>
+                            <li>Apply initial XOR with P₁₇ and P₁₈</li>
+                            <li>For 16 rounds in reverse order: Apply F-function and XOR operations</li>
+                            <li>Apply final XOR with P₂ and P₁</li>
+                            <li>Output original plaintext</li>
+                        </ol>
+                        <p><em>💡 Decryption reverses the encryption process using the same key schedule.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function simulateBlowfishEncryption(plaintext, key, keySize) {
+            // This is a simplified simulation for educational purposes
+            // Real Blowfish would use proper cryptographic operations
+            let result = '';
+            
+            for (let i = 0; i < plaintext.length; i++) {
+                const charCode = plaintext.charCodeAt(i);
+                const keyChar = key.charCodeAt(i % key.length);
+                const keySizeFactor = keySize / 64; // Normalize by key size
+                
+                // Simulate Blowfish: complex key mixing with key size consideration
+                let temp = charCode;
+                temp = (temp + keyChar + keySizeFactor) % 256;  // Initial mixing
+                temp = (temp * (keyChar % 16 + 1)) % 256;      // S-box simulation
+                temp = (temp + (keySize % 256)) % 256;         // Key size influence
+                
+                result += String.fromCharCode(temp);
+            }
+            
+            // Convert to base64 representation
+            return btoa(result);
+        }
+        
+        function simulateBlowfishDecryption(ciphertext, key, keySize) {
+            // This is a simplified simulation for educational purposes
+            try {
+                const decoded = atob(ciphertext);
+                let result = '';
+                
+                for (let i = 0; i < decoded.length; i++) {
+                    const charCode = decoded.charCodeAt(i);
+                    const keyChar = key.charCodeAt(i % key.length);
+                    const keySizeFactor = keySize / 64;
+                    
+                    // Simulate Blowfish decryption: reverse the encryption process
+                    let temp = charCode;
+                    temp = (temp - (keySize % 256) + 256) % 256;         // Remove key size influence
+                    temp = (temp / (keyChar % 16 + 1)) % 256;            // Reverse S-box simulation
+                    temp = (temp - keyChar - keySizeFactor + 256) % 256; // Reverse initial mixing
+                    
+                    result += String.fromCharCode(temp);
+                }
+                
+                return result;
+            } catch (e) {
+                return "Error: Invalid encrypted data format";
+            }
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diffie-Hellman Key Exchange - Cryptography Toolkit</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    .back-button{display:inline-block;background:rgba(255,255,255,.2);color:#fff;padding:10px 20px;text-decoration:none;border-radius:25px;margin-bottom:20px;transition:all .3s ease}
+    .back-button:hover{background:rgba(255,255,255,.3);transform:translateY(-2px)}
+    .algorithm-header,.working-section{background:rgba(255,255,255,.95);border-radius:20px;padding:40px;margin-bottom:30px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
+    .algorithm-header{text-align:center}
+    .algorithm-header h1{color:#4a5568;margin-bottom:15px;font-size:2.5rem}
+    .working-section h2{color:#4a5568;margin-bottom:25px;font-size:2rem;border-bottom:3px solid #667eea;padding-bottom:10px}
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;margin-bottom:8px;color:#495057;font-weight:600;font-size:1.1rem}
+    .form-group input{width:100%;padding:15px;border:2px solid #e9ecef;border-radius:10px;font-size:1rem;transition:border-color .3s ease}
+    .btn{background:linear-gradient(45deg,#667eea,#764ba2);color:#fff;padding:15px 30px;border:none;border-radius:10px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.15);margin-right:15px;margin-bottom:15px}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+    .result-box{background:#fff;border-radius:15px;padding:25px;margin-top:25px;border-left:5px solid #667eea;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+    .mono{font-family:'Courier New',monospace;background:#f8f9fa;border-radius:8px;padding:10px;word-break:break-all}
+    .step-by-step{background:#f8f9fa;border-radius:10px;padding:20px;margin-top:20px;border-left:4px solid #28a745}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-button">← Back to Toolkit</a>
+    <div class="algorithm-header">
+      <h1>🔑 Diffie-Hellman Key Exchange</h1>
+      <p>Compute shared secrets over an insecure channel using modular exponentiation.</p>
+    </div>
+
+    <div class="working-section">
+      <h2>Parameters & Secrets</h2>
+      <form>
+        <div class="form-group"><label for="p">Prime p:</label><input id="p" type="number" value="30803"></div>
+        <div class="form-group"><label for="g">Generator g:</label><input id="g" type="number" value="2"></div>
+        <div class="form-group"><label for="a">Alice secret a:</label><input id="a" type="number" value="1234"></div>
+        <div class="form-group"><label for="b">Bob secret b:</label><input id="b" type="number" value="4321"></div>
+        <div class="form-group"><input type="checkbox" id="educational"> <label for="educational">Show Step-by-Step Calculations</label></div>
+        <button type="button" class="btn" onclick="computeDH()">Compute</button>
+      </form>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    function modExp(base, exp, mod){let r=1n,b=BigInt(base)%BigInt(mod),e=BigInt(exp),m=BigInt(mod);while(e>0n){if(e&1n)r=(r*b)%m;b=(b*b)%m;e>>=1n}return r}
+    function computeDH(){
+      const p=BigInt(document.getElementById('p').value);
+      const g=BigInt(document.getElementById('g').value);
+      const a=BigInt(document.getElementById('a').value);
+      const b=BigInt(document.getElementById('b').value);
+      const A=modExp(g,a,p);
+      const B=modExp(g,b,p);
+      const sA=modExp(B,a,p);
+      const sB=modExp(A,b,p);
+      let html = `<div class="result-box">
+        <h4>Results</h4>
+        <p><strong>Public A = g^a mod p:</strong> <span class="mono">${A}</span></p>
+        <p><strong>Public B = g^b mod p:</strong> <span class="mono">${B}</span></p>
+        <p><strong>Shared sA = B^a mod p:</strong> <span class="mono">${sA}</span></p>
+        <p><strong>Shared sB = A^b mod p:</strong> <span class="mono">${sB}</span></p>
+        <p><strong>Match:</strong> ${sA===sB? '✅ Yes' : '❌ No'}</p>
+      </div>`;
+      if(document.getElementById('educational').checked){
+        html += `<div class="step-by-step"><h5>📝 Steps</h5><ol>
+          <li>Compute A = g^a mod p = ${g}^${a} mod ${p} = <code>${A}</code></li>
+          <li>Compute B = g^b mod p = ${g}^${b} mod ${p} = <code>${B}</code></li>
+          <li>Alice computes s = B^a mod p = ${B}^${a} mod ${p} = <code>${sA}</code></li>
+          <li>Bob computes s = A^b mod p = ${A}^${b} mod ${p} = <code>${sB}</code></li>
+        </ol></div>`;
+      }
+      document.getElementById('result').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

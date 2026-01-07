@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-content h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .hero-content p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-card li {
+            padding: 8px 0;
+            color: #666;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-card li:before {
+            content: "🔐";
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+
+        .algorithms-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .algorithms-section h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-category {
+            margin-bottom: 40px;
+        }
+
+        .algorithm-category h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .algorithm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .algorithm-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .algorithm-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+
+
+        .algorithm-item h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .algorithm-item p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .usage-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .usage-section h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .usage-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .usage-method {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .usage-method h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .usage-method p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .code-example .comment {
+            color: #68d391;
+        }
+
+        .code-example .keyword {
+            color: #63b3ed;
+        }
+
+        .code-example .string {
+            color: #f6ad55;
+        }
+
+        .installation-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .installation-section h2 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .install-steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .install-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .install-step h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .install-step p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .install-step code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+            opacity: 0.8;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: white;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-links a:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-section, .features-grid, .algorithms-section, .usage-section, .installation-section {
+                padding: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .algorithm-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .usage-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Comprehensive Cryptography Toolkit</h1>
+            <p class="subtitle">A Complete Python Implementation for Educational and Demonstration Purposes</p>
+        </header>
+
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Master the Art of Cryptography</h2>
+                <p>
+                    Explore classical ciphers, modern encryption algorithms, hash functions, digital signatures, 
+                    and key exchange protocols. Perfect for students, researchers, and cryptography enthusiasts 
+                    who want to understand the inner workings of cryptographic systems.
+                </p>
+                <a href="#features" class="cta-button">Explore Features</a>
+            </div>
+        </section>
+
+        <section id="features" class="features-grid">
+            <div class="feature-card">
+                <h3>🎯 Educational Focus</h3>
+                <ul>
+                    <li>Step-by-step algorithm visualization</li>
+                    <li>Detailed intermediate calculations</li>
+                    <li>Performance benchmarking tools</li>
+                    <li>Comprehensive documentation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h3>🔧 Easy to Use</h3>
+                <ul>
+                    <li>Interactive console interface</li>
+                    <li>File encryption/decryption</li>
+                    <li>Key management utilities</li>
+                    <li>Cross-platform compatibility</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h3>📚 Comprehensive Coverage</h3>
+                <ul>
+                    <li>8 Classical Ciphers</li>
+                    <li>4 Modern Symmetric Algorithms</li>
+                    <li>3 Asymmetric Encryption Methods</li>
+                    <li>4 Hash Functions + Digital Signatures</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="algorithms-section">
+            <h2>🔐 Cryptographic Algorithms</h2>
+            
+            <div class="algorithm-category">
+                <h3>Classical Ciphers</h3>
+                <div class="algorithm-grid">
+                                         <div class="algorithm-item" onclick="navigateToAlgorithm('caesar-cipher')">
+                         <h4>Caesar Cipher</h4>
+                         <p>Simple substitution cipher with shift-based encryption</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('vigenere-cipher')">
+                         <h4>Vigenère Cipher</h4>
+                         <p>Polyalphabetic substitution using keyword</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('playfair-cipher')">
+                         <h4>Playfair Cipher</h4>
+                         <p>Digraphic substitution using 5x5 matrix</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('hill-cipher')">
+                         <h4>Hill Cipher</h4>
+                         <p>Matrix-based polygraphic substitution</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('rail-fence-cipher')">
+                         <h4>Rail Fence Cipher</h4>
+                         <p>Transposition cipher with zigzag pattern</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('columnar-transposition')">
+                         <h4>Columnar Transposition</h4>
+                         <p>Grid-based transposition using keyword</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('vernam-cipher')">
+                         <h4>Vernam Cipher</h4>
+                         <p>One-time pad with perfect secrecy</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('monoalphabetic')">
+                         <h4>Monoalphabetic</h4>
+                         <p>Random substitution mapping</p>
+                     </div>
+                </div>
+            </div>
+
+            <div class="algorithm-category">
+                <h3>Modern Symmetric Encryption</h3>
+                <div class="algorithm-grid">
+                                         <div class="algorithm-item" onclick="navigateToAlgorithm('aes')">
+                         <h4>AES (Advanced Encryption Standard)</h4>
+                         <p>128, 192, and 256-bit key support with CBC mode</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('des')">
+                         <h4>DES (Data Encryption Standard)</h4>
+                         <p>Classic 56-bit key block cipher</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('triple-des')">
+                         <h4>Triple DES (3DES)</h4>
+                         <p>Enhanced security with triple encryption</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('blowfish')">
+                         <h4>Blowfish</h4>
+                         <p>Fast block cipher with variable key length</p>
+                     </div>
+                </div>
+            </div>
+
+            <div class="algorithm-category">
+                <h3>Asymmetric Encryption</h3>
+                <div class="algorithm-grid">
+                                         <div class="algorithm-item" onclick="navigateToAlgorithm('rsa')">
+                         <h4>RSA</h4>
+                         <p>Public-key cryptography with key generation</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('elgamal')">
+                         <h4>ElGamal</h4>
+                         <p>Discrete logarithm-based encryption</p>
+                     </div>
+                     <div class="algorithm-item" onclick="navigateToAlgorithm('ecc')">
+                         <h4>ECC (Elliptic Curve)</h4>
+                         <p>Modern elliptic curve cryptography</p>
+                     </div>
+                </div>
+            </div>
+
+            <div class="algorithm-category">
+                <h3>Hash Functions & Digital Signatures</h3>
+                <div class="algorithm-grid">
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('md5')">
+                        <h4>MD5</h4>
+                        <p>128-bit hash function (for educational purposes)</p>
+                    </div>
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('sha-1')">
+                        <h4>SHA-1</h4>
+                        <p>160-bit secure hash algorithm</p>
+                    </div>
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('sha-256')">
+                        <h4>SHA-256</h4>
+                        <p>256-bit secure hash algorithm</p>
+                    </div>
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('sha-3')">
+                        <h4>SHA-3 (Keccak)</h4>
+                        <p>Latest SHA family member</p>
+                    </div>
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('rsa-signature')">
+                        <h4>RSA Digital Signature</h4>
+                        <p>Digital signatures using RSA keys</p>
+                    </div>
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('dsa')">
+                        <h4>DSA</h4>
+                        <p>Digital Signature Algorithm</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="algorithm-category">
+                <h3>Key Exchange Protocols</h3>
+                <div class="algorithm-grid">
+                    <div class="algorithm-item" onclick="navigateToAlgorithm('diffie-hellman')">
+                        <h4>Diffie-Hellman</h4>
+                        <p>Secure key exchange over public channels</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+
+
+
+
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Ready to Explore Cryptography?</h2>
+                <p>
+                    Whether you're a student learning about cryptography, a researcher exploring algorithms, 
+                    or a developer building secure applications, this toolkit provides everything you need 
+                    to understand and implement cryptographic systems.
+                </p>
+                <div style="margin-top: 30px;">
+                    <a href="#features" class="cta-button" style="margin-right: 20px;">View Features</a>
+                    <a href="#" class="cta-button" style="background: linear-gradient(45deg, #f093fb, #f5576c);">Get Started</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Comprehensive Cryptography Toolkit. Built with ❤️ for educational purposes.</p>
+            <p>Perfect for <span class="highlight">Computer Science</span>, <span class="highlight">Cybersecurity</span>, and <span class="highlight">Cryptography</span> courses</p>
+            <div class="social-links">
+                <a href="#" title="GitHub">📁</a>
+                <a href="#" title="Documentation">📚</a>
+                <a href="#" title="Issues">🐛</a>
+                <a href="#" title="Contributions">🤝</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation function for algorithms
+        function navigateToAlgorithm(algorithmId) {
+            // Create the algorithm page URL using the server route
+            const algorithmPage = `/${algorithmId}`;
+            
+            // Navigate to the algorithm page
+            window.location.href = algorithmPage;
+        }
+    </script>
+</body>
+</html>

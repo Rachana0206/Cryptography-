@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vernam Cipher (One-Time Pad) - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .key-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Vernam Cipher (One-Time Pad)</h1>
+            <p>The Vernam Cipher, also known as the One-Time Pad, is a theoretically unbreakable encryption method that uses a random key of the same length as the plaintext.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Vernam Cipher is the only known cryptosystem that is theoretically unbreakable when used correctly. It works by combining each character of the plaintext with a corresponding character from a random key using XOR-like operations. The key must be truly random, used only once, and kept secret.</p>
+            
+            <div class="formula-box">
+                <strong>Process:</strong><br>
+                • Generate random key of same length as plaintext<br>
+                • For each character: ciphertext = (plaintext + key) mod 26<br>
+                • Decryption: plaintext = (ciphertext - key) mod 26<br>
+                • Key must be used only once and kept secret
+            </div>
+
+            <div class="example-box">
+                <h4>Example:</h4>
+                <p><strong>Plaintext:</strong> "HELLO"</p>
+                <p><strong>Random Key:</strong> "XMCKL"</p>
+                <p><strong>Encryption:</strong> H(7) + X(23) = 30 mod 26 = 4 → E</p>
+                <p><strong>Result:</strong> "HELLO" + "XMCKL" = "EQZQZ"</p>
+            </div>
+
+            <p><strong>Security:</strong> The Vernam Cipher is theoretically unbreakable because the ciphertext reveals no information about the plaintext without the key. However, it requires perfect key management: truly random keys, one-time use, and secure key distribution.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Vernam Cipher</h2>
+            
+            <form id="vernam-form">
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="generateNewKey()">🎲 Generate New Key</button>
+                <button type="button" class="btn btn-info" onclick="showKey()">🔍 Show Current Key</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentKey = '';
+        
+        function generateRandomKey(length) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let key = '';
+            for (let i = 0; i < length; i++) {
+                key += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            }
+            return key;
+        }
+        
+        function generateNewKey() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            if (!plaintext) {
+                showResult('Please enter text first to generate an appropriate key length');
+                return;
+            }
+            
+            const cleanText = plaintext.replace(/\s/g, '');
+            currentKey = generateRandomKey(cleanText.length);
+            
+            showResult(`
+                <h4>🎲 New Random Key Generated</h4>
+                <div class="result-content">
+                    <p>A new random key has been generated for your text.</p>
+                    <p><strong>Text Length:</strong> ${cleanText.length} characters</p>
+                    <p><strong>New Key:</strong></p>
+                    <div class="key-display">${currentKey}</div>
+                    <p><em>💡 This key is truly random and should be used only once for perfect security.</em></p>
+                </div>
+            `);
+        }
+        
+        function showKey() {
+            if (!currentKey) {
+                showResult('No key has been generated yet. Please generate a key first.');
+                return;
+            }
+            
+            showResult(`
+                <h4>🔍 Current Key</h4>
+                <div class="result-content">
+                    <p><strong>Current Key:</strong></p>
+                    <div class="key-display">${currentKey}</div>
+                    <p><strong>Key Length:</strong> ${currentKey.length} characters</p>
+                    <p><em>💡 Remember: This key must be kept secret and used only once!</em></p>
+                </div>
+            `);
+        }
+        
+        function encryptText() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to encrypt');
+                return;
+            }
+            
+            if (!currentKey) {
+                showResult('Please generate a key first');
+                return;
+            }
+            
+            const cleanText = plaintext.replace(/\s/g, '');
+            if (cleanText.length !== currentKey.length) {
+                showResult(`Key length (${currentKey.length}) must match text length (${cleanText.length}). Please generate a new key.`);
+                return;
+            }
+            
+            let ciphertext = '';
+            let steps = [];
+            
+            for (let i = 0; i < cleanText.length; i++) {
+                const plainChar = cleanText.charCodeAt(i) - 65; // A=0, B=1, etc.
+                const keyChar = currentKey.charCodeAt(i) - 65;
+                const encryptedChar = (plainChar + keyChar) % 26;
+                ciphertext += String.fromCharCode(encryptedChar + 65);
+                
+                if (educationalMode) {
+                    steps.push(`${cleanText[i]}(${plainChar}) + ${currentKey[i]}(${keyChar}) = ${encryptedChar + 26} mod 26 = ${encryptedChar} → ${String.fromCharCode(encryptedChar + 65)}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Key:</strong></p>
+                    <div class="key-display">${currentKey}</div>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                        <p><em>💡 Each character is encrypted using modular arithmetic with the corresponding key character.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext) {
+                showResult('Please enter ciphertext to decrypt');
+                return;
+            }
+            
+            if (!currentKey) {
+                showResult('Please generate a key first');
+                return;
+            }
+            
+            if (ciphertext.length !== currentKey.length) {
+                showResult(`Key length (${currentKey.length}) must match ciphertext length (${ciphertext.length}). Please generate a new key.`);
+                return;
+            }
+            
+            let plaintext = '';
+            let steps = [];
+            
+            for (let i = 0; i < ciphertext.length; i++) {
+                const cipherChar = ciphertext.charCodeAt(i) - 65;
+                const keyChar = currentKey.charCodeAt(i) - 65;
+                const decryptedChar = (cipherChar - keyChar + 26) % 26;
+                plaintext += String.fromCharCode(decryptedChar + 65);
+                
+                if (educationalMode) {
+                    steps.push(`${ciphertext[i]}(${cipherChar}) - ${currentKey[i]}(${keyChar}) = ${cipherChar - keyChar} + 26 = ${cipherChar - keyChar + 26} mod 26 = ${decryptedChar} → ${String.fromCharCode(decryptedChar + 65)}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Key:</strong></p>
+                    <div class="key-display">${currentKey}</div>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                        <p><em>💡 Each character is decrypted by reversing the encryption process using the same key.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

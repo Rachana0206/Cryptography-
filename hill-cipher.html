@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hill Cipher - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .matrix-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .matrix-display table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .matrix-display th,
+        .matrix-display td {
+            border: 2px solid #667eea;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .matrix-display th {
+            background: #667eea;
+            color: white;
+        }
+
+        .console-block {
+            background: #e9ecef;
+            color: #111;
+            padding: 16px 18px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .key-input {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .key-input input {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .key-input {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Hill Cipher</h1>
+            <p>The Hill Cipher is a polygraphic substitution cipher based on linear algebra that uses matrix multiplication for encryption and decryption.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Hill Cipher encrypts groups of letters (digraphs for 2x2 matrix, trigraphs for 3x3 matrix) using matrix multiplication. Each letter is converted to a number (A=0, B=1, ..., Z=25), and the text is processed in blocks.</p>
+            
+            <div class="formula-box">
+                <strong>Encryption:</strong> C = (K × P) mod 26<br>
+                <strong>Decryption:</strong> P = (K⁻¹ × C) mod 26<br>
+                Where K is the key matrix, P is plaintext, C is ciphertext
+            </div>
+
+            <div class="example-box">
+                <h4>Example with 2x2 Key Matrix:</h4>
+                <p><strong>Key Matrix:</strong> [[3, 3], [2, 5]]</p>
+                <p><strong>Plaintext:</strong> HELLO</p>
+                <p><strong>Process:</strong> HE → [7, 4] → [3×7+3×4, 2×7+5×4] = [33, 34] → [7, 8] → HI</p>
+            </div>
+
+            <p><strong>Security:</strong> The Hill Cipher is more secure than simple substitution ciphers because it encrypts multiple letters at once, making frequency analysis more difficult. However, it's vulnerable to known plaintext attacks.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Hill Cipher</h2>
+            
+            <form id="hill-form">
+                <div class="form-group">
+                    <label for="matrix-size">Matrix Size:</label>
+                    <select id="matrix-size" onchange="updateKeyInputs()">
+                        <option value="2">2x2 Matrix (Digraphs)</option>
+                        <option value="3">3x3 Matrix (Trigraphs)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="key-matrix">Key Matrix (enter numbers separated by spaces):</label>
+                    <div id="key-inputs" class="key-input">
+                        <input type="number" id="k00" value="3" placeholder="0,0">
+                        <input type="number" id="k01" value="3" placeholder="0,1">
+                        <input type="number" id="k10" value="2" placeholder="1,0">
+                        <input type="number" id="k11" value="5" placeholder="1,1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt (letters only)..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="key-string">Optional: Key as letters (row-wise, 4 letters for 2x2 or 9 letters for 3x3). Examples: <code>GYBNQKURP</code>, <code>HILLMAGIC</code></label>
+                    <input type="text" id="key-string" placeholder="Enter key letters (e.g., GYBNQKURP)">
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="generateRandomKey()">🎲 Generate Random Key</button>
+                <button type="button" class="btn btn-success" onclick="encryptWithKeyString()">⚡ Quick Encrypt (Key Letters)</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateKeyInputs() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            const container = document.getElementById('key-inputs');
+            
+            container.innerHTML = '';
+            
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `k${row}${col}`;
+                    input.placeholder = `${row},${col}`;
+                    input.value = (row === col) ? 1 : 0;
+                    container.appendChild(input);
+                }
+            }
+        }
+
+        function getKeyMatrix() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            const matrix = [];
+            
+            for (let row = 0; row < size; row++) {
+                matrix[row] = [];
+                for (let col = 0; col < size; col++) {
+                    const value = parseInt(document.getElementById(`k${row}${col}`).value);
+                    matrix[row][col] = value;
+                }
+            }
+            
+            return matrix;
+        }
+
+        function mod(n, m) { return ((n % m) + m) % m; }
+
+        function matrixMultiply(matrix, vector) {
+            const result = [];
+            for (let i = 0; i < matrix.length; i++) {
+                let sum = 0;
+                for (let j = 0; j < matrix[i].length; j++) {
+                    sum += matrix[i][j] * vector[j];
+                }
+                result.push(mod(sum, 26));
+            }
+            return result;
+        }
+
+        function textToNumbers(text) {
+            return text.split('').map(char => char.charCodeAt(0) - 65);
+        }
+
+        function numbersToText(numbers) {
+            return numbers.map(num => String.fromCharCode(num + 65)).join('');
+        }
+
+        function padText(text, blockSize) {
+            while (text.length % blockSize !== 0) {
+                text += 'X';
+            }
+            return text;
+        }
+
+        function encryptText() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to encrypt');
+                return;
+            }
+            
+            const keyMatrix = getKeyMatrix();
+            const blockSize = keyMatrix.length;
+            const paddedText = padText(plaintext, blockSize);
+            
+            let ciphertext = '';
+            let steps = [];
+            
+            for (let i = 0; i < paddedText.length; i += blockSize) {
+                const block = paddedText.substr(i, blockSize);
+                const numbers = textToNumbers(block);
+                const encrypted = matrixMultiply(keyMatrix, numbers);
+                const encryptedText = numbersToText(encrypted);
+                ciphertext += encryptedText;
+                
+                if (educationalMode) {
+                    steps.push(`${block} → [${numbers.join(', ')}] → [${encrypted.join(', ')}] → ${encryptedText}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Padded Text:</strong> <code>${paddedText}</code></p>
+                    <p><strong>Key Matrix:</strong></p>
+                    <div class="matrix-display">
+                        ${displayMatrix(keyMatrix)}
+                    </div>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+
+        // Build matrix from a key string (row-wise)
+        function buildMatrixFromKeyString(keyStr, size) {
+            const cleaned = keyStr.toUpperCase().replace(/[^A-Z]/g, '');
+            const needed = size * size;
+            if (cleaned.length !== needed) return null;
+            const nums = textToNumbers(cleaned);
+            const matrix = [];
+            for (let r = 0; r < size; r++) {
+                matrix[r] = [];
+                for (let c = 0; c < size; c++) {
+                    matrix[r][c] = nums[r * size + c] % 26;
+                }
+            }
+            return matrix;
+        }
+
+        function encryptWithKeyString() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const keyStr = document.getElementById('key-string').value;
+            const size = parseInt(document.getElementById('matrix-size').value);
+            if (!plaintext || !keyStr) { showResult('Enter plaintext and key letters.'); return; }
+            const keyMatrix = buildMatrixFromKeyString(keyStr, size);
+            if (!keyMatrix) { showResult(`Key must have exactly ${size*size} letters.`); return; }
+
+            // Also populate numeric inputs from key for visibility
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    document.getElementById(`k${r}${c}`).value = keyMatrix[r][c];
+                }
+            }
+
+            const blockSize = size;
+            const paddedText = padText(plaintext, blockSize);
+            let ciphertext = '';
+            let consoleOut = '';
+            for (let i = 0; i < paddedText.length; i += blockSize) {
+                const block = paddedText.substr(i, blockSize);
+                const vec = textToNumbers(block);
+                const enc = matrixMultiply(keyMatrix, vec);
+                const encTxt = numbersToText(enc);
+                ciphertext += encTxt;
+                consoleOut += `Input  : Plaintext: ${block}\n  Key: ${keyStr.toUpperCase()}\nOutput : Ciphertext: ${encTxt}\n\n`;
+            }
+
+            const resultHTML = `
+                <h4>🔐 Hill Cipher (Quick Encrypt)</h4>
+                <div class="result-content">
+                    <div class="console-block">${consoleOut.trim()}</div>
+                </div>
+            `;
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext) {
+                showResult('Please enter text to decrypt');
+                return;
+            }
+            
+            const keyMatrix = getKeyMatrix();
+            const blockSize = keyMatrix.length;
+            
+            if (ciphertext.length % blockSize !== 0) {
+                showResult('Ciphertext length must be a multiple of ' + blockSize);
+                return;
+            }
+            
+            // Compute modular inverse of key matrix
+            const inverseMatrix = getInverseMatrix(keyMatrix);
+            
+            let plaintext = '';
+            let steps = [];
+            
+            for (let i = 0; i < ciphertext.length; i += blockSize) {
+                const block = ciphertext.substr(i, blockSize);
+                const numbers = textToNumbers(block);
+                const decrypted = matrixMultiply(inverseMatrix, numbers);
+                const decryptedText = numbersToText(decrypted);
+                plaintext += decryptedText;
+                
+                if (educationalMode) {
+                    steps.push(`${block} → [${numbers.join(', ')}] → [${decrypted.join(', ')}] → ${decryptedText}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Key Matrix:</strong></p>
+                    <div class="matrix-display">
+                        ${displayMatrix(keyMatrix)}
+                    </div>
+                    <p><strong>Inverse Matrix:</strong></p>
+                    <div class="matrix-display">
+                        ${displayMatrix(inverseMatrix)}
+                    </div>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function getInverseMatrix(matrix) {
+            const n = matrix.length;
+            if (n === 2) {
+                const det = mod(matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0], 26);
+                const detInv = modInverse(det, 26);
+                if (detInv === null) { return [[1, 0], [0, 1]]; }
+                const adj = [
+                    [matrix[1][1], -matrix[0][1]],
+                    [-matrix[1][0], matrix[0][0]]
+                ];
+                const inverse = [];
+                for (let i = 0; i < 2; i++) {
+                    inverse[i] = [];
+                    for (let j = 0; j < 2; j++) {
+                        inverse[i][j] = mod(adj[i][j] * detInv, 26);
+                    }
+                }
+                return inverse;
+            }
+
+            if (n === 3) {
+                // Determinant
+                const a = matrix;
+                const det = mod(
+                    a[0][0] * (a[1][1] * a[2][2] - a[1][2] * a[2][1]) -
+                    a[0][1] * (a[1][0] * a[2][2] - a[1][2] * a[2][0]) +
+                    a[0][2] * (a[1][0] * a[2][1] - a[1][1] * a[2][0])
+                , 26);
+                const detInv = modInverse(det, 26);
+                if (detInv === null) {
+                    // Not invertible; return identity to avoid crashes
+                    return matrix.map((row, i) => row.map((_, j) => i === j ? 1 : 0));
+                }
+                // Cofactor matrix
+                const cofactor = [
+                    [
+                        mod( (a[1][1]*a[2][2] - a[1][2]*a[2][1]), 26),
+                        mod(-(a[1][0]*a[2][2] - a[1][2]*a[2][0]), 26),
+                        mod( (a[1][0]*a[2][1] - a[1][1]*a[2][0]), 26)
+                    ],
+                    [
+                        mod(-(a[0][1]*a[2][2] - a[0][2]*a[2][1]), 26),
+                        mod( (a[0][0]*a[2][2] - a[0][2]*a[2][0]), 26),
+                        mod(-(a[0][0]*a[2][1] - a[0][1]*a[2][0]), 26)
+                    ],
+                    [
+                        mod( (a[0][1]*a[1][2] - a[0][2]*a[1][1]), 26),
+                        mod(-(a[0][0]*a[1][2] - a[0][2]*a[1][0]), 26),
+                        mod( (a[0][0]*a[1][1] - a[0][1]*a[1][0]), 26)
+                    ]
+                ];
+                // Adjugate is transpose of cofactor
+                const adj = [
+                    [cofactor[0][0], cofactor[1][0], cofactor[2][0]],
+                    [cofactor[0][1], cofactor[1][1], cofactor[2][1]],
+                    [cofactor[0][2], cofactor[1][2], cofactor[2][2]]
+                ];
+                // Multiply by det inverse mod 26
+                const inverse = [];
+                for (let i = 0; i < 3; i++) {
+                    inverse[i] = [];
+                    for (let j = 0; j < 3; j++) {
+                        inverse[i][j] = mod(adj[i][j] * detInv, 26);
+                    }
+                }
+                return inverse;
+            }
+
+            // Fallback: identity for other sizes
+            return matrix.map((row, i) => row.map((_, j) => i === j ? 1 : 0));
+        }
+        
+        function modInverse(a, m) {
+            a = mod(a, m);
+            for (let x = 1; x < m; x++) {
+                if (mod(a * x, m) === 1) return x;
+            }
+            return null;
+        }
+        
+        function generateRandomKey() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const input = document.getElementById(`k${row}${col}`);
+                    input.value = Math.floor(Math.random() * 26);
+                }
+            }
+            
+            showResult(`
+                <h4>🎲 Random Key Generated</h4>
+                <div class="result-content">
+                    <p>A new random key matrix has been generated. You can now use it for encryption/decryption.</p>
+                    <div class="matrix-display">
+                        ${displayMatrix(getKeyMatrix())}
+                    </div>
+                </div>
+            `);
+        }
+        
+        function displayMatrix(matrix) {
+            let html = '<table>';
+            for (let row of matrix) {
+                html += '<tr>';
+                for (let cell of row) {
+                    html += `<td>${cell}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            return html;
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+        
+        // Initialize the page
+        updateKeyInputs();
+    </script>
+</body>
+</html>

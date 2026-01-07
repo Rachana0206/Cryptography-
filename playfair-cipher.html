@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playfair Cipher - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .matrix-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .matrix-display table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .matrix-display th,
+        .matrix-display td {
+            border: 2px solid #667eea;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .matrix-display th {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Playfair Cipher</h1>
+            <p>The Playfair Cipher is a digraphic substitution cipher that uses a 5x5 matrix based on a keyword to encrypt pairs of letters.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Playfair Cipher encrypts pairs of letters (digraphs) instead of single letters, making it more secure than simple substitution ciphers. It uses a 5x5 matrix filled with the letters of the alphabet (I and J share the same position).</p>
+            
+            <div class="formula-box">
+                <strong>Rules:</strong><br>
+                1. If both letters are in the same row: take the letter to the right<br>
+                2. If both letters are in the same column: take the letter below<br>
+                3. If neither: form a rectangle and take the opposite corners
+            </div>
+
+            <div class="example-box">
+                <h4>Example with Keyword "PLAYFAIR":</h4>
+                <p><strong>Keyword:</strong> PLAYFAIR</p>
+                <p><strong>Matrix:</strong> P L A Y F, I R B C D, E G H K M, N O Q S T, U V W X Z</p>
+                <p><strong>Plaintext:</strong> HELLO WORLD</p>
+                <p><strong>Process:</strong> HE → LL → OW → OR → LD</p>
+            </div>
+
+            <p><strong>Security:</strong> The Playfair Cipher is more secure than simple substitution ciphers because it encrypts digraphs, making frequency analysis more difficult. However, it can still be broken using known plaintext attacks.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Playfair Cipher</h2>
+            
+            <form id="playfair-form">
+                <div class="form-group">
+                    <label for="keyword">Keyword:</label>
+                    <input type="text" id="keyword" value="PLAYFAIR" placeholder="Enter keyword (letters only)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt (letters only)..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="showMatrix()">🔍 Show Matrix</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function generateMatrix(keyword) {
+            const cleanKeyword = keyword.toUpperCase().replace(/[^A-Z]/g, '');
+            const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'; // I and J are combined
+            
+            let matrix = [];
+            let usedChars = new Set();
+            
+            // Add keyword characters first
+            for (let char of cleanKeyword) {
+                if (!usedChars.has(char)) {
+                    usedChars.add(char);
+                    if (matrix.length === 0 || matrix[matrix.length - 1].length === 5) {
+                        matrix.push([]);
+                    }
+                    matrix[matrix.length - 1].push(char);
+                }
+            }
+            
+            // Fill remaining positions with alphabet
+            for (let char of alphabet) {
+                if (!usedChars.has(char)) {
+                    if (matrix.length === 0 || matrix[matrix.length - 1].length === 5) {
+                        matrix.push([]);
+                    }
+                    matrix[matrix.length - 1].push(char);
+                }
+            }
+            
+            return matrix;
+        }
+
+        function findPosition(matrix, char) {
+            for (let row = 0; row < matrix.length; row++) {
+                for (let col = 0; col < matrix[row].length; col++) {
+                    if (matrix[row][col] === char) {
+                        return { row, col };
+                    }
+                }
+            }
+            return null;
+        }
+
+        function prepareText(text) {
+            // Replace J with I and remove non-letters
+            let cleaned = text.toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+            
+            // Add X between repeated letters and pad with X if odd length
+            let result = '';
+            for (let i = 0; i < cleaned.length; i++) {
+                if (i > 0 && cleaned[i] === cleaned[i-1]) {
+                    result += 'X';
+                }
+                result += cleaned[i];
+            }
+            
+            if (result.length % 2 === 1) {
+                result += 'X';
+            }
+            
+            return result;
+        }
+
+        function encryptDigraph(matrix, char1, char2) {
+            const pos1 = findPosition(matrix, char1);
+            const pos2 = findPosition(matrix, char2);
+            
+            if (!pos1 || !pos2) return char1 + char2;
+            
+            let result = '';
+            
+            if (pos1.row === pos2.row) {
+                // Same row: take letter to the right
+                result += matrix[pos1.row][(pos1.col + 1) % 5];
+                result += matrix[pos2.row][(pos2.col + 1) % 5];
+            } else if (pos1.col === pos2.col) {
+                // Same column: take letter below
+                result += matrix[(pos1.row + 1) % 5][pos1.col];
+                result += matrix[(pos2.row + 1) % 5][pos2.col];
+            } else {
+                // Rectangle: take opposite corners
+                result += matrix[pos1.row][pos2.col];
+                result += matrix[pos2.row][pos1.col];
+            }
+            
+            return result;
+        }
+
+        function decryptDigraph(matrix, char1, char2) {
+            const pos1 = findPosition(matrix, char1);
+            const pos2 = findPosition(matrix, char2);
+            
+            if (!pos1 || !pos2) return char1 + char2;
+            
+            let result = '';
+            
+            if (pos1.row === pos2.row) {
+                // Same row: take letter to the left
+                result += matrix[pos1.row][(pos1.col - 1 + 5) % 5];
+                result += matrix[pos2.row][(pos2.col - 1 + 5) % 5];
+            } else if (pos1.col === pos2.col) {
+                // Same column: take letter above
+                result += matrix[(pos1.row - 1 + 5) % 5][pos1.col];
+                result += matrix[(pos2.row - 1 + 5) % 5][pos2.col];
+            } else {
+                // Rectangle: take opposite corners
+                result += matrix[pos1.row][pos2.col];
+                result += matrix[pos2.row][pos1.col];
+            }
+            
+            return result;
+        }
+
+        function encryptText() {
+            const keyword = document.getElementById('keyword').value;
+            const plaintext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext || !keyword) {
+                showResult('Please enter both keyword and text to encrypt');
+                return;
+            }
+            
+            const matrix = generateMatrix(keyword);
+            const preparedText = prepareText(plaintext);
+            let ciphertext = '';
+            let steps = [];
+            
+            for (let i = 0; i < preparedText.length; i += 2) {
+                const char1 = preparedText[i];
+                const char2 = preparedText[i + 1];
+                const encrypted = encryptDigraph(matrix, char1, char2);
+                ciphertext += encrypted;
+                
+                if (educationalMode) {
+                    steps.push(`${char1}${char2} → ${encrypted}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Prepared Text:</strong> <code>${preparedText}</code></p>
+                    <p><strong>Keyword:</strong> ${keyword}</p>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const keyword = document.getElementById('keyword').value;
+            const ciphertext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext || !keyword) {
+                showResult('Please enter both keyword and text to decrypt');
+                return;
+            }
+            
+            const matrix = generateMatrix(keyword);
+            let plaintext = '';
+            let steps = [];
+            
+            for (let i = 0; i < ciphertext.length; i += 2) {
+                const char1 = ciphertext[i];
+                const char2 = ciphertext[i + 1];
+                const decrypted = decryptDigraph(matrix, char1, char2);
+                plaintext += decrypted;
+                
+                if (educationalMode) {
+                    steps.push(`${char1}${char2} → ${decrypted}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Keyword:</strong> ${keyword}</p>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function showMatrix() {
+            const keyword = document.getElementById('keyword').value;
+            
+            if (!keyword) {
+                showResult('Please enter a keyword to generate the matrix');
+                return;
+            }
+            
+            const matrix = generateMatrix(keyword);
+            
+            let matrixHTML = '<table>';
+            for (let row of matrix) {
+                matrixHTML += '<tr>';
+                for (let cell of row) {
+                    matrixHTML += `<td>${cell}</td>`;
+                }
+                matrixHTML += '</tr>';
+            }
+            matrixHTML += '</table>';
+            
+            const resultHTML = `
+                <h4>🔍 Playfair Matrix</h4>
+                <div class="result-content">
+                    <p><strong>Keyword:</strong> ${keyword}</p>
+                    <div class="matrix-display">
+                        ${matrixHTML}
+                    </div>
+                    <p><em>💡 Note: I and J share the same position in the matrix.</em></p>
+                </div>
+            `;
+            
+            showResult(resultHTML);
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

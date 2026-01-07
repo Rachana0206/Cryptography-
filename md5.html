@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MD5 - Cryptography Toolkit</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    .back-button{display:inline-block;background:rgba(255,255,255,.2);color:#fff;padding:10px 20px;text-decoration:none;border-radius:25px;margin-bottom:20px;transition:all .3s ease}
+    .back-button:hover{background:rgba(255,255,255,.3);transform:translateY(-2px)}
+    .algorithm-header,.working-section{background:rgba(255,255,255,.95);border-radius:20px;padding:40px;margin-bottom:30px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
+    .algorithm-header{text-align:center}
+    .algorithm-header h1{color:#4a5568;margin-bottom:15px;font-size:2.5rem}
+    .working-section h2{color:#4a5568;margin-bottom:25px;font-size:2rem;border-bottom:3px solid #667eea;padding-bottom:10px}
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;margin-bottom:8px;color:#495057;font-weight:600;font-size:1.1rem}
+    .form-group textarea{width:100%;padding:15px;border:2px solid #e9ecef;border-radius:10px;font-size:1rem;transition:border-color .3s ease;resize:vertical;min-height:120px}
+    .btn{background:linear-gradient(45deg,#667eea,#764ba2);color:#fff;padding:15px 30px;border:none;border-radius:10px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.15);margin-right:15px;margin-bottom:15px}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+    .result-box{background:#fff;border-radius:15px;padding:25px;margin-top:25px;border-left:5px solid #667eea;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+    .hash-display{font-family:'Courier New',monospace;background:#f8f9fa;border-radius:8px;padding:10px;word-break:break-all}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-button">← Back to Toolkit</a>
+    <div class="algorithm-header">
+      <h1>🔐 MD5</h1>
+      <p>MD5 is a 128-bit hash function. It is broken and should not be used for security, but remains useful for education and checksums.</p>
+    </div>
+
+    <div class="working-section">
+      <h2>Generate MD5</h2>
+      <form>
+        <div class="form-group">
+          <label for="plaintext">Input Text:</label>
+          <textarea id="plaintext" placeholder="Enter text to hash..."></textarea>
+        </div>
+        <button type="button" class="btn" onclick="hashMD5()">Generate Hash</button>
+      </form>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    // Lightweight MD5 implementation (RFC 1321) adapted for demo
+    // For brevity, this is a compact implementation suitable for educational use
+    function md5(s){function L(k,d){return(k<<d)|(k>>>32-d)}function K(G,k){var I,d,F,H,E;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);E=(G&1073741823)+(k&1073741823);if(I&d){return(E^2147483648^F^H)}if(I|d){if(E&1073741824){return(E^3221225472^F^H)}else{return(E^1073741824^F^H)}}else{return(E^F^H)}}function r(d,F,k){return(d&F)|((~d)&k)}function q(d,F,k){return(d&k)|(F&(~k))}function p(d,F,k){return d^F^k}function n(d,F,k){return F^(d|(~k))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="",F="",G,d;for(d=0;d<=3;d++){G=(x>>>d*8)&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/\r\n/g,"\n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else{if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;string=J(s);C=e(string);h=1732584193;E=4023233417;v=2562383102;g=271733878;for(P=0;P<C.length;P+=16){Y=h;X=E;W=v;V=g;h=u(h,E,v,g,C[P+0],S,3614090360);g=u(g,h,E,v,C[P+1],Q,3905402710);v=u(v,g,h,E,C[P+2],N,606105819);E=u(E,v,g,h,C[P+3],M,3250441966);h=u(h,E,v,g,C[P+4],S,4118548399);g=u(g,h,E,v,C[P+5],Q,1200080426);v=u(v,g,h,E,C[P+6],N,2821735955);E=u(E,v,g,h,C[P+7],M,4249261313);h=u(h,E,v,g,C[P+8],S,1770035416);g=u(g,h,E,v,C[P+9],Q,2336552879);v=u(v,g,h,E,C[P+10],N,4294925233);E=u(E,v,g,h,C[P+11],M,2304563134);h=u(h,E,v,g,C[P+12],S,1804603682);g=u(g,h,E,v,C[P+13],Q,4254626195);v=u(v,g,h,E,C[P+14],N,2792965006);E=u(E,v,g,h,C[P+15],M,1236535329);h=f(h,E,v,g,C[P+1],A,4129170786);g=f(g,h,E,v,C[P+6],z,3225465664);v=f(v,g,h,E,C[P+11],y,643717713);E=f(E,v,g,h,C[P+0],w,3921069994);h=f(h,E,v,g,C[P+5],A,3593408605);g=f(g,h,E,v,C[P+10],z,38016083);v=f(v,g,h,E,C[P+15],y,3634488961);E=f(E,v,g,h,C[P+4],w,3889429448);h=f(h,E,v,g,C[P+9],A,568446438);g=f(g,h,E,v,C[P+14],z,3275163606);v=f(v,g,h,E,C[P+3],y,4107603335);E=f(E,v,g,h,C[P+8],w,1163531501);h=f(h,E,v,g,C[P+13],A,2850285829);g=f(g,h,E,v,C[P+2],z,4243563512);v=f(v,g,h,E,C[P+7],y,1735328473);E=f(E,v,g,h,C[P+12],w,2368359562);h=D(h,E,v,g,C[P+5],o,4294588738);g=D(g,h,E,v,C[P+8],m,2272392833);v=D(v,g,h,E,C[P+11],l,1839030562);E=D(E,v,g,h,C[P+14],j,4259657740);h=D(h,E,v,g,C[P+1],o,2763975236);g=D(g,h,E,v,C[P+4],m,1272893353);v=D(v,g,h,E,C[P+7],l,4139469664);E=D(E,v,g,h,C[P+10],j,3200236656);h=D(h,E,v,g,C[P+13],o,681279174);g=D(g,h,E,v,C[P+0],m,3936430074);v=D(v,g,h,E,C[P+3],l,3572445317);E=D(E,v,g,h,C[P+6],j,76029189);h=t(h,E,v,g,C[P+9],U,3654602809);g=t(g,h,E,v,C[P+12],T,3873151461);v=t(v,g,h,E,C[P+15],R,530742520);E=t(E,v,g,h,C[P+2],O,3299628645);h=K(h,Y);E=K(E,X);v=K(v,W);g=K(g,V)}var i=B(h)+B(E)+B(v)+B(g);return i.toLowerCase()}
+    function hashMD5(){
+      const text=document.getElementById('plaintext').value;
+      if(!text){document.getElementById('result').innerHTML='<div class="result-box">Please enter text.</div>';return}
+      const hash=md5(text);
+      document.getElementById('result').innerHTML=`<div class="result-box"><h4>MD5 Hash</h4><div class="hash-display">${hash}</div></div>`
+    }
+  </script>
+</body>
+</html>

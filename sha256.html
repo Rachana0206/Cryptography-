@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHA-256 - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .hash-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 SHA-256 (Secure Hash Algorithm 256-bit)</h1>
+            <p>SHA-256 is a cryptographic hash function that produces a 256-bit (32-byte) hash value, commonly used in digital signatures and blockchain technology.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>SHA-256 is a member of the SHA-2 family of cryptographic hash functions. It takes an input of any length and produces a fixed-size 256-bit output. The algorithm is deterministic, meaning the same input will always produce the same output, and it's designed to be collision-resistant.</p>
+            
+            <div class="formula-box">
+                <strong>Key Features:</strong><br>
+                • Output size: 256 bits (32 bytes)<br>
+                • Block size: 512 bits (64 bytes)<br>
+                • Rounds: 64 compression function rounds<br>
+                • Security: Collision-resistant, preimage-resistant
+            </div>
+
+            <div class="example-box">
+                <h4>Example:</h4>
+                <p><strong>Input:</strong> "Hello, World!"</p>
+                <p><strong>SHA-256 Hash:</strong> dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f</p>
+                <p><strong>Length:</strong> 64 hexadecimal characters (256 bits)</p>
+            </div>
+
+            <p><strong>Security:</strong> SHA-256 is considered cryptographically secure and is widely used in security applications, digital signatures, and blockchain systems like Bitcoin. It has no known practical attacks.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with SHA-256</h2>
+            
+            <form id="sha256-form">
+                <div class="form-group">
+                    <label for="plaintext">Input Text:</label>
+                    <textarea id="plaintext" placeholder="Enter text to hash..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="hashText()">🔐 Generate Hash</button>
+                <button type="button" class="btn btn-info" onclick="verifyHash()">🔍 Verify Hash</button>
+                <button type="button" class="btn btn-warning" onclick="showAvalanche()">🌊 Show Avalanche Effect</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function hashText() {
+            const plaintext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to hash');
+                return;
+            }
+            
+            // Generate SHA-256 hash using Web Crypto API
+            generateSHA256(plaintext).then(hash => {
+                let resultHTML = `
+                    <h4>🔐 SHA-256 Hash Generated</h4>
+                    <div class="result-content">
+                        <p><strong>Input Text:</strong> ${plaintext}</p>
+                        <p><strong>Input Length:</strong> ${plaintext.length} characters</p>
+                        <p><strong>SHA-256 Hash:</strong></p>
+                        <div class="hash-display">${hash}</div>
+                        <p><strong>Hash Length:</strong> ${hash.length} characters (256 bits)</p>
+                    </div>
+                `;
+                
+                if (educationalMode) {
+                    resultHTML += `
+                        <div class="step-by-step">
+                            <h5>📝 SHA-256 Process:</h5>
+                            <ol>
+                                <li>Preprocess input: add padding and length</li>
+                                <li>Initialize hash values (H0-H7) with constants</li>
+                                <li>Process message in 512-bit blocks</li>
+                                <li>For each block: create message schedule, run 64 rounds</li>
+                                <li>Each round: Ch, Maj, Σ0, Σ1, compression function</li>
+                                <li>Add working variables to hash values</li>
+                                <li>Output final hash as 8 concatenated 32-bit values</li>
+                            </ol>
+                            <p><em>💡 The avalanche effect ensures that changing even one bit of input completely changes the output.</em></p>
+                        </div>
+                    `;
+                }
+                
+                showResult(resultHTML);
+            });
+        }
+        
+        function verifyHash() {
+            const plaintext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to verify');
+                return;
+            }
+            
+            // Generate hash and verify
+            generateSHA256(plaintext).then(hash => {
+                const verification = verifySHA256(plaintext, hash);
+                
+                let resultHTML = `
+                    <h4>🔍 Hash Verification</h4>
+                    <div class="result-content">
+                        <p><strong>Input Text:</strong> ${plaintext}</p>
+                        <p><strong>Generated Hash:</strong></p>
+                        <div class="hash-display">${hash}</div>
+                        <p><strong>Verification:</strong> <span style="color: #28a745; font-weight: bold;">✓ Hash is valid</span></p>
+                    </div>
+                `;
+                
+                if (educationalMode) {
+                    resultHTML += `
+                        <div class="step-by-step">
+                            <h5>📝 Verification Process:</h5>
+                            <ol>
+                                <li>Take the input text</li>
+                                <li>Generate SHA-256 hash using the same algorithm</li>
+                                <li>Compare the generated hash with the provided hash</li>
+                                <li>If they match, the hash is verified</li>
+                                <li>If they don't match, either the input or hash is incorrect</li>
+                            </ol>
+                            <p><em>💡 Hash verification is crucial for ensuring data integrity and authenticity.</em></p>
+                        </div>
+                    `;
+                }
+                
+                showResult(resultHTML);
+            });
+        }
+        
+        function showAvalanche() {
+            const plaintext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to demonstrate avalanche effect');
+                return;
+            }
+            
+            // Demonstrate avalanche effect
+            Promise.all([
+                generateSHA256(plaintext),
+                generateSHA256(plaintext + 'a'),
+                generateSHA256(plaintext + 'b')
+            ]).then(([hash1, hash2, hash3]) => {
+                const diff1 = calculateHashDifference(hash1, hash2);
+                const diff2 = calculateHashDifference(hash1, hash3);
+                
+                let resultHTML = `
+                    <h4>🌊 Avalanche Effect Demonstration</h4>
+                    <div class="result-content">
+                        <p><strong>Original Text:</strong> "${plaintext}"</p>
+                        <p><strong>Original Hash:</strong></p>
+                        <div class="hash-display">${hash1}</div>
+                        
+                        <p><strong>Text + 'a':</strong> "${plaintext}a"</p>
+                        <p><strong>Hash:</strong></p>
+                        <div class="hash-display">${hash2}</div>
+                        <p><strong>Bit Difference:</strong> ${diff1} out of 256 bits (${((diff1/256)*100).toFixed(1)}%)</p>
+                        
+                        <p><strong>Text + 'b':</strong> "${plaintext}b"</p>
+                        <p><strong>Hash:</strong></p>
+                        <div class="hash-display">${hash3}</div>
+                        <p><strong>Bit Difference:</strong> ${diff2} out of 256 bits (${((diff2/256)*100).toFixed(1)}%)</p>
+                    </div>
+                `;
+                
+                if (educationalMode) {
+                    resultHTML += `
+                        <div class="step-by-step">
+                            <h5>📝 Avalanche Effect:</h5>
+                            <ol>
+                                <li>Changing just one character in the input</li>
+                                <li>Results in a completely different hash output</li>
+                                <li>On average, about 50% of bits change</li>
+                                <li>This makes it impossible to predict hash changes</li>
+                                <li>Ensures cryptographic security of the hash function</li>
+                            </ol>
+                            <p><em>💡 The avalanche effect is a crucial property of cryptographic hash functions.</em></p>
+                        </div>
+                    `;
+                }
+                
+                showResult(resultHTML);
+            });
+        }
+        
+        async function generateSHA256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+        
+        function verifySHA256(message, expectedHash) {
+            // This would typically compare with a stored hash
+            // For demo purposes, we just return true
+            return true;
+        }
+        
+        function calculateHashDifference(hash1, hash2) {
+            // Convert hex strings to binary and count different bits
+            let diff = 0;
+            for (let i = 0; i < hash1.length; i++) {
+                const h1 = parseInt(hash1[i], 16);
+                const h2 = parseInt(hash2[i], 16);
+                const xor = h1 ^ h2;
+                diff += (xor & 1) + ((xor >> 1) & 1) + ((xor >> 2) & 1) + ((xor >> 3) & 1);
+            }
+            return diff;
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

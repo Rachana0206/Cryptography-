@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monoalphabetic Cipher - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .mapping-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .mapping-display table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .mapping-display th,
+        .mapping-display td {
+            border: 2px solid #667eea;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 40px;
+        }
+
+        .mapping-display th {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Monoalphabetic Cipher</h1>
+            <p>The Monoalphabetic Cipher is a substitution cipher where each letter in the plaintext is mapped to a unique letter in the ciphertext using a fixed substitution table.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Monoalphabetic Cipher uses a one-to-one mapping between plaintext letters and ciphertext letters. Unlike the Caesar Cipher which shifts letters by a fixed amount, this cipher can map any letter to any other letter, making it more secure but still vulnerable to frequency analysis.</p>
+            
+            <div class="formula-box">
+                <strong>Process:</strong><br>
+                • Create a random mapping of A-Z to A-Z<br>
+                • Each plaintext letter maps to exactly one ciphertext letter<br>
+                • No two plaintext letters map to the same ciphertext letter
+            </div>
+
+            <div class="example-box">
+                <h4>Example Mapping:</h4>
+                <p><strong>Plaintext:</strong> A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</p>
+                <p><strong>Ciphertext:</strong> X K M P Q A T Y W B C D E F G H I J K L M N O P Q R</p>
+                <p><strong>Message:</strong> "HELLO" → "YQDDG"</p>
+            </div>
+
+            <p><strong>Security:</strong> While more secure than simple shift ciphers, the Monoalphabetic Cipher is vulnerable to frequency analysis because it preserves the frequency distribution of letters. Common letters like E, T, A, O, I, N will still appear frequently in the ciphertext.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Monoalphabetic Cipher</h2>
+            
+            <form id="monoalphabetic-form">
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="generateNewKey()">🎲 Generate New Key</button>
+                <button type="button" class="btn btn-info" onclick="showMapping()">🔍 Show Mapping</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate a random substitution key
+        let substitutionKey = generateRandomKey();
+        
+        function generateRandomKey() {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const shuffled = alphabet.split('').sort(() => Math.random() - 0.5);
+            return shuffled.join('');
+        }
+        
+        function generateNewKey() {
+            substitutionKey = generateRandomKey();
+            showResult(`
+                <h4>🎲 New Substitution Key Generated</h4>
+                <div class="result-content">
+                    <p>A new random substitution key has been generated.</p>
+                    <p><strong>New Key:</strong> <code>${substitutionKey}</code></p>
+                    <p><em>💡 You can now use this key for encryption/decryption.</em></p>
+                </div>
+            `);
+        }
+        
+        function showMapping() {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let mappingHTML = '<table><tr><th>Plaintext</th>';
+            
+            for (let char of alphabet) {
+                mappingHTML += `<th>${char}</th>`;
+            }
+            mappingHTML += '</tr><tr><td><strong>Ciphertext</strong></td>';
+            
+            for (let char of substitutionKey) {
+                mappingHTML += `<td>${char}</td>`;
+            }
+            mappingHTML += '</tr></table>';
+            
+            const resultHTML = `
+                <h4>🔍 Substitution Mapping</h4>
+                <div class="result-content">
+                    <p><strong>Current Key:</strong> <code>${substitutionKey}</code></p>
+                    <div class="mapping-display">
+                        ${mappingHTML}
+                    </div>
+                    <p><em>💡 Each plaintext letter maps to exactly one ciphertext letter.</em></p>
+                </div>
+            `;
+            
+            showResult(resultHTML);
+        }
+        
+        function encryptText() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to encrypt');
+                return;
+            }
+            
+            let ciphertext = '';
+            let steps = [];
+            
+            for (let char of plaintext) {
+                if (char === ' ') {
+                    ciphertext += ' ';
+                    continue;
+                }
+                
+                const index = char.charCodeAt(0) - 65; // A=0, B=1, etc.
+                const encryptedChar = substitutionKey[index];
+                ciphertext += encryptedChar;
+                
+                if (educationalMode) {
+                    steps.push(`${char} → ${encryptedChar}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Substitution Key:</strong> <code>${substitutionKey}</code></p>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext) {
+                showResult('Please enter ciphertext to decrypt');
+                return;
+            }
+            
+            let plaintext = '';
+            let steps = [];
+            
+            for (let char of ciphertext) {
+                if (char === ' ') {
+                    plaintext += ' ';
+                    continue;
+                }
+                
+                const index = substitutionKey.indexOf(char);
+                const decryptedChar = String.fromCharCode(index + 65);
+                plaintext += decryptedChar;
+                
+                if (educationalMode) {
+                    steps.push(`${char} → ${decryptedChar}`);
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Substitution Key:</strong> <code>${substitutionKey}</code></p>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+        
+        // Initialize with a random key
+        generateNewKey();
+    </script>
+</body>
+</html>

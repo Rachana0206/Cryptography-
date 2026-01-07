@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .key-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 RSA (Rivest-Shamir-Adleman)</h1>
+            <p>RSA is an asymmetric cryptographic algorithm that uses a pair of keys: a public key for encryption and a private key for decryption.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>RSA is based on the mathematical difficulty of factoring the product of two large prime numbers. The security of RSA relies on the fact that while it's easy to multiply two large primes, it's computationally infeasible to factor their product.</p>
+            
+            <div class="formula-box">
+                <strong>Key Generation:</strong><br>
+                • Choose two large primes p and q<br>
+                • Calculate n = p × q<br>
+                • Calculate φ(n) = (p-1) × (q-1)<br>
+                • Choose e where gcd(e, φ(n)) = 1<br>
+                • Calculate d where (e × d) mod φ(n) = 1
+            </div>
+
+            <div class="example-box">
+                <h4>Example with Small Numbers:</h4>
+                <p><strong>p = 61, q = 53</strong></p>
+                <p><strong>n = 61 × 53 = 3233</strong></p>
+                <p><strong>φ(n) = 60 × 52 = 3120</strong></p>
+                <p><strong>e = 17 (public exponent)</strong></p>
+                <p><strong>d = 2753 (private exponent)</strong></p>
+            </div>
+
+            <p><strong>Security:</strong> RSA security depends on the difficulty of factoring large numbers. Modern RSA implementations use keys of 2048 bits or larger, making factorization computationally infeasible with current technology.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with RSA</h2>
+            
+            <form id="rsa-form">
+                <div class="form-group">
+                    <label for="key-size">Key Size:</label>
+                    <select id="key-size">
+                        <option value="512">512 bits (for demo only)</option>
+                        <option value="1024">1024 bits</option>
+                        <option value="2048" selected>2048 bits (recommended)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <input type="checkbox" id="manual-mode" onchange="toggleManual()"> <label for="manual-mode">Use formula mode (manual p, q, e)</label>
+                </div>
+                
+                <div id="manual-panel" style="display:none;">
+                    <div class="form-group">
+                        <label>p (prime):</label>
+                        <input type="number" id="p-input" placeholder="e.g., 61">
+                    </div>
+                    <div class="form-group">
+                        <label>q (prime):</label>
+                        <input type="number" id="q-input" placeholder="e.g., 53">
+                    </div>
+                    <div class="form-group">
+                        <label>e (public exponent, coprime to φ(n)):</label>
+                        <input type="number" id="e-input" placeholder="e.g., 17">
+                    </div>
+                    <button type="button" class="btn" onclick="computeManualKeys()">🧮 Compute Keys from p, q, e</button>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="generateKeys()">🔑 Generate Keys</button>
+                <button type="button" class="btn btn-info" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-warning" onclick="decryptText()">🔓 Decrypt</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentKeys = null;
+        let manualKeys = null;
+
+        async function generateKeys() {
+            const keySize = parseInt(document.getElementById('key-size').value);
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            const pair = await crypto.subtle.generateKey({
+                name: 'RSA-OAEP',
+                modulusLength: keySize,
+                publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+                hash: 'SHA-256'
+            }, true, ['encrypt','decrypt']);
+            currentKeys = pair;
+            const jwkPub = await crypto.subtle.exportKey('jwk', pair.publicKey);
+            const jwkPriv = await crypto.subtle.exportKey('jwk', pair.privateKey);
+            
+            let resultHTML = `
+                <h4>🔑 RSA Keys Generated</h4>
+                <div class="result-content">
+                    <p><strong>Key Size:</strong> ${keySize} bits</p>
+                    <div class="key-display">
+                        <h5>Public Key (JWK):</h5>
+                        <p><strong>n (modulus, base64url):</strong> <code>${jwkPub.n}</code></p>
+                        <p><strong>e (exponent, base64url):</strong> <code>${jwkPub.e}</code></p>
+                    </div>
+                    <div class="key-display">
+                        <h5>Private Key (JWK excerpt):</h5>
+                        <p><strong>d (base64url):</strong> <code>${(jwkPriv.d||'').slice(0,32)}…</code></p>
+                    </div>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Key Generation (Web Crypto):</h5>
+                        <ol>
+                            <li>Generate RSA-OAEP keys with modulusLength=${keySize} and public exponent 65537</li>
+                            <li>Export keys as JWK to show modulus n and exponent e</li>
+                        </ol>
+                        <p><em>💡 Use the public key to encrypt and the private key to decrypt.</em></p>
+                    </div>
+                `;
+            }
+            showResult(resultHTML);
+        }
+
+        function toggleManual(){
+            const on = document.getElementById('manual-mode').checked;
+            document.getElementById('manual-panel').style.display = on ? 'block' : 'none';
+        }
+
+        // ----- Formula mode (manual p, q, e) -----
+        function gcdBig(a,b){ while(b!==0n){ const t=a%b; a=b; b=t;} return a; }
+        function egcd(a,b){
+            let old_r=a, r=b, old_s=1n, s=0n, old_t=0n, t=1n;
+            while(r!==0n){ const q=old_r/r; [old_r,r]=[r, old_r-q*r]; [old_s,s]=[s, old_s-q*s]; [old_t,t]=[t, old_t-q*t]; }
+            return {g:old_r, x:old_s, y:old_t};
+        }
+        function modInvBig(a,m){ a=((a%m)+m)%m; const {g,x}=egcd(a,m); if(g!==1n) return null; return (x%m+m)%m; }
+        function modPowBig(base, exp, mod){ base%=mod; let res=1n; while(exp>0n){ if(exp&1n) res=(res*base)%mod; base=(base*base)%mod; exp>>=1n;} return res; }
+
+        function computeManualKeys(){
+            const p = BigInt(document.getElementById('p-input').value || '0');
+            const q = BigInt(document.getElementById('q-input').value || '0');
+            const e = BigInt(document.getElementById('e-input').value || '0');
+            if(p<=1n || q<=1n || e<=1n){ showResult('Please enter valid p, q, e (integers > 1).'); return; }
+            const n = p*q;
+            const phi = (p-1n)*(q-1n);
+            if(gcdBig(e, phi) !== 1n){ showResult('e must be coprime to φ(n).'); return; }
+            const d = modInvBig(e, phi);
+            if(d===null){ showResult('Could not compute modular inverse for d.'); return; }
+            manualKeys = { n, e, d };
+            let html = `
+                <h4>🔑 RSA Keys (Formula Mode)</h4>
+                <div class="result-content">
+                    <p><strong>n = p × q:</strong> <code>${n.toString()}</code></p>
+                    <p><strong>φ(n) = (p-1)(q-1):</strong> <code>${phi.toString()}</code></p>
+                    <p><strong>e (public):</strong> <code>${e.toString()}</code></p>
+                    <p><strong>d (private) where e·d ≡ 1 (mod φ(n)):</strong> <code>${d.toString()}</code></p>
+                </div>`;
+            showResult(html);
+        }
+
+        async function encryptText() {
+            const plaintext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext) {
+                showResult('Please enter text to encrypt');
+                return;
+            }
+            // If manual mode is ON and keys available, use textbook RSA: c = m^e mod n per character
+            if (document.getElementById('manual-mode').checked) {
+                if (!manualKeys) { showResult('Compute keys from p, q, e first.'); return; }
+                const {n,e} = manualKeys;
+                let nums = [];
+                let steps = [];
+                for (let ch of plaintext) {
+                    const m = BigInt(ch.codePointAt(0));
+                    if (m >= n) { showResult('Each character code must be less than n. Choose larger primes or shorter text.'); return; }
+                    const c = modPowBig(m, e, n);
+                    nums.push(c.toString());
+                    if (educationalMode) steps.push(`${m}^${e} mod ${n} = ${c}`);
+                }
+                let html = `
+                    <h4>🔐 RSA Encryption Result (Formula Mode)</h4>
+                    <div class="result-content">
+                        <p><strong>Ciphertext (space-separated integers):</strong></p>
+                        <code>${nums.join(' ')}</code>
+                    </div>`;
+                if (educationalMode && steps.length){
+                    html += `<div class="step-by-step"><h5>Steps:</h5><ol>${steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
+                }
+                showResult(html);
+                return;
+            }
+
+            if (!currentKeys) {
+                showResult('Please generate keys first');
+                return;
+            }
+            
+            const data = new TextEncoder().encode(plaintext);
+            const cipherBuf = await crypto.subtle.encrypt({name:'RSA-OAEP'}, currentKeys.publicKey, data);
+            const encrypted = b64encode(new Uint8Array(cipherBuf));
+            
+            let resultHTML = `
+                <h4>🔐 RSA Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Encrypted (base64):</strong> <code>${encrypted}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Encryption Process:</h5>
+                        <ol>
+                            <li>Encode plaintext as UTF-8 bytes</li>
+                            <li>Encrypt with RSA-OAEP (SHA-256)</li>
+                            <li>Base64-encode the ciphertext</li>
+                        </ol>
+                        <p><em>💡 Only the private key holder can decrypt this message.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        async function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value;
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext) {
+                showResult('Please enter encrypted text to decrypt');
+                return;
+            }
+            // Manual mode decryption: numbers to text using d
+            if (document.getElementById('manual-mode').checked) {
+                if (!manualKeys) { showResult('Compute keys from p, q, e first.'); return; }
+                const {n,d} = manualKeys;
+                const parts = ciphertext.trim().split(/\s+/).filter(Boolean);
+                let chars = [];
+                let steps = [];
+                for (let part of parts) {
+                    const c = BigInt(part);
+                    const m = modPowBig(c, d, n);
+                    chars.push(String.fromCodePoint(Number(m)));
+                    if (educationalMode) steps.push(`${c}^${d} mod ${n} = ${m}`);
+                }
+                let plain = chars.join('');
+                let html = `
+                    <h4>🔓 RSA Decryption Result (Formula Mode)</h4>
+                    <div class="result-content">
+                        <p><strong>Plaintext:</strong> <code>${plain}</code></p>
+                    </div>`;
+                if (educationalMode && steps.length){
+                    html += `<div class="step-by-step"><h5>Steps:</h5><ol>${steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
+                }
+                showResult(html);
+                return;
+            }
+
+            if (!currentKeys) {
+                showResult('Please generate keys first');
+                return;
+            }
+            
+            const cipherBytes = b64decode(ciphertext);
+            try {
+                const plainBuf = await crypto.subtle.decrypt({name:'RSA-OAEP'}, currentKeys.privateKey, cipherBytes);
+                const decrypted = new TextDecoder().decode(plainBuf);
+                let resultHTML = `
+                    <h4>🔓 RSA Decryption Result</h4>
+                    <div class="result-content">
+                        <p><strong>Decrypted Data:</strong> <code>${decrypted}</code></p>
+                    </div>
+                `;
+                if (educationalMode) {
+                    resultHTML += `
+                        <div class="step-by-step">
+                            <h5>📝 Decryption Process:</h5>
+                            <ol>
+                                <li>Base64-decode ciphertext</li>
+                                <li>Decrypt with RSA-OAEP using the private key</li>
+                                <li>Decode UTF-8 bytes to text</li>
+                            </ol>
+                        </div>
+                    `;
+                }
+                showResult(resultHTML);
+            } catch (e) {
+                showResult('Failed to decrypt. Ensure the ciphertext and keys match.');
+            }
+        }
+        // Base64 helpers
+        function b64encode(bytes){
+            let binary = '';
+            for (let b of bytes) binary += String.fromCharCode(b);
+            return btoa(binary);
+        }
+        function b64decode(b64){
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+            return bytes;
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

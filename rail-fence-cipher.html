@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Fence Cipher - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .fence-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Rail Fence Cipher</h1>
+            <p>The Rail Fence Cipher is a transposition cipher that arranges the plaintext in a zigzag pattern along a specified number of rails.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Rail Fence Cipher works by writing the plaintext in a zigzag pattern across a specified number of rails (rows), then reading off the ciphertext row by row. This is a form of transposition cipher that rearranges the position of letters without changing the letters themselves.</p>
+            
+            <div class="formula-box">
+                <strong>Process:</strong><br>
+                1. Write plaintext in zigzag pattern across N rails<br>
+                2. Read ciphertext row by row from top to bottom
+            </div>
+
+            <div class="example-box">
+                <h4>Example with 3 Rails:</h4>
+                <p><strong>Plaintext:</strong> HELLO WORLD</p>
+                <p><strong>Zigzag Pattern:</strong></p>
+                <div class="fence-display">
+                    H . . . O . . . R . .<br>
+                    . E . L . W . L . . .<br>
+                    . . L . . . O . . . D
+                </div>
+                <p><strong>Ciphertext:</strong> HORELWLOD</p>
+            </div>
+
+            <p><strong>Security:</strong> The Rail Fence Cipher is a weak cipher that can be easily broken by trying different numbers of rails. It's mainly used for educational purposes and simple obfuscation.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Rail Fence Cipher</h2>
+            
+            <form id="rail-fence-form">
+                <div class="form-group">
+                    <label for="rails">Number of Rails:</label>
+                    <input type="number" id="rails" value="3" min="2" max="10" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="showFence()">🔍 Show Fence</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function createFence(text, rails) {
+            const fence = Array(rails).fill().map(() => Array(text.length).fill(' '));
+            let row = 0;
+            let direction = 1; // 1 for down, -1 for up
+            
+            for (let col = 0; col < text.length; col++) {
+                fence[row][col] = text[col];
+                
+                row += direction;
+                
+                // Change direction at the top or bottom rail
+                if (row === 0 || row === rails - 1) {
+                    direction = -direction;
+                }
+            }
+            
+            return fence;
+        }
+
+        function encryptText() {
+            const text = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            const rails = parseInt(document.getElementById('rails').value);
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!text) {
+                showResult('Please enter text to encrypt');
+                return;
+            }
+            
+            if (rails < 2 || rails > 10) {
+                showResult('Number of rails must be between 2 and 10');
+                return;
+            }
+            
+            const fence = createFence(text, rails);
+            let ciphertext = '';
+            
+            // Read row by row
+            for (let row = 0; row < rails; row++) {
+                for (let col = 0; col < text.length; col++) {
+                    if (fence[row][col] !== ' ') {
+                        ciphertext += fence[row][col];
+                    }
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${text}</p>
+                    <p><strong>Number of Rails:</strong> ${rails}</p>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Zigzag Pattern:</h5>
+                        <div class="fence-display">
+                            ${displayFence(fence)}
+                        </div>
+                        <p><em>💡 The ciphertext is read row by row from top to bottom.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const rails = parseInt(document.getElementById('rails').value);
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext) {
+                showResult('Please enter ciphertext to decrypt');
+                return;
+            }
+            
+            if (rails < 2 || rails > 10) {
+                showResult('Number of rails must be between 2 and 10');
+                return;
+            }
+            
+            // Calculate the length of each rail
+            const railLengths = calculateRailLengths(ciphertext.length, rails);
+            
+            // Reconstruct the fence
+            const fence = reconstructFence(ciphertext, rails, railLengths);
+            
+            // Read the plaintext in zigzag pattern
+            const plaintext = readZigzag(fence, ciphertext.length);
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Number of Rails:</strong> ${rails}</p>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Reconstructed Fence:</h5>
+                        <div class="fence-display">
+                            ${displayFence(fence)}
+                        </div>
+                        <p><em>💡 The plaintext is read in zigzag pattern from left to right.</em></p>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function calculateRailLengths(textLength, rails) {
+            const lengths = Array(rails).fill(0);
+            let row = 0;
+            let direction = 1;
+            
+            for (let i = 0; i < textLength; i++) {
+                lengths[row]++;
+                row += direction;
+                if (row === 0 || row === rails - 1) {
+                    direction = -direction;
+                }
+            }
+            
+            return lengths;
+        }
+        
+        function reconstructFence(ciphertext, rails, railLengths) {
+            const fence = Array(rails).fill().map(() => Array(ciphertext.length).fill(' '));
+            let cipherIndex = 0;
+            
+            // Fill each rail with its portion of the ciphertext
+            for (let row = 0; row < rails; row++) {
+                for (let col = 0; col < railLengths[row]; col++) {
+                    fence[row][col] = ciphertext[cipherIndex++];
+                }
+            }
+            
+            return fence;
+        }
+        
+        function readZigzag(fence, textLength) {
+            let plaintext = '';
+            let row = 0;
+            let direction = 1;
+            let col = 0;
+            
+            for (let i = 0; i < textLength; i++) {
+                // Find the next non-space character in the current row
+                while (col < fence[row].length && fence[row][col] === ' ') {
+                    col++;
+                }
+                
+                if (col < fence[row].length) {
+                    plaintext += fence[row][col];
+                    col++;
+                }
+                
+                row += direction;
+                if (row === 0 || row === fence.length - 1) {
+                    direction = -direction;
+                    col = 0;
+                }
+            }
+            
+            return plaintext;
+        }
+        
+        function showFence() {
+            const text = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            const rails = parseInt(document.getElementById('rails').value);
+            
+            if (!text) {
+                showResult('Please enter text to show the fence');
+                return;
+            }
+            
+            if (rails < 2 || rails > 10) {
+                showResult('Number of rails must be between 2 and 10');
+                return;
+            }
+            
+            const fence = createFence(text, rails);
+            
+            const resultHTML = `
+                <h4>🔍 Rail Fence Pattern</h4>
+                <div class="result-content">
+                    <p><strong>Text:</strong> ${text}</p>
+                    <p><strong>Number of Rails:</strong> ${rails}</p>
+                    <div class="fence-display">
+                        ${displayFence(fence)}
+                    </div>
+                    <p><em>💡 This shows how the text is arranged in the zigzag pattern.</em></p>
+                </div>
+            `;
+            
+            showResult(resultHTML);
+        }
+        
+        function displayFence(fence) {
+            let html = '';
+            for (let row = 0; row < fence.length; row++) {
+                for (let col = 0; col < fence[row].length; col++) {
+                    const char = fence[row][col];
+                    if (char === ' ') {
+                        html += '. ';
+                    } else {
+                        html += char + ' ';
+                    }
+                }
+                html += '<br>';
+            }
+            return html;
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

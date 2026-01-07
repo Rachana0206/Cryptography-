@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ElGamal - Cryptography Toolkit</title>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+		.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+		.back-button { display: inline-block; background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; margin-bottom: 20px; transition: all 0.3s ease; }
+		.back-button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+		.algorithm-header { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+		.algorithm-header h1 { color: #4a5568; margin-bottom: 15px; font-size: 2.5rem; }
+		.algorithm-header p { color: #666; font-size: 1.1rem; max-width: 700px; margin: 0 auto; }
+		.working-section { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+		.working-section h2 { color: #4a5568; margin-bottom: 25px; font-size: 2rem; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+		.form-group { margin-bottom: 20px; }
+		.form-group label { display: block; margin-bottom: 8px; color: #495057; font-weight: 600; font-size: 1.1rem; }
+		.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 15px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s ease; }
+		.form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+		.form-group textarea { resize: vertical; min-height: 120px; }
+		.checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+		.checkbox-group input[type="checkbox"] { width: auto; margin: 0; }
+		.btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-right: 15px; margin-bottom: 15px; }
+		.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+		.btn-success { background: linear-gradient(45deg, #28a745, #20c997); }
+		.btn-info { background: linear-gradient(45deg, #17a2b8, #6f42c1); }
+		.btn-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+		.result-box { background: #ffffff; border-radius: 15px; padding: 25px; margin-top: 25px; border-left: 5px solid #667eea; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+		.result-box h4 { color: #495057; margin-bottom: 20px; font-size: 1.4rem; }
+		.result-content p { margin-bottom: 15px; color: #6c757d; font-size: 1.1rem; }
+		.result-content code { background: #f8f9fa; padding: 8px 12px; border-radius: 6px; font-family: 'Courier New', monospace; color: #e83e8c; word-break: break-all; font-size: 1rem; }
+		.step-by-step { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-top: 20px; border-left: 4px solid #28a745; }
+		.step-by-step h5 { color: #495057; margin-bottom: 15px; font-size: 1.2rem; }
+		.step-by-step ol { color: #6c757d; padding-left: 20px; }
+		.step-by-step li { margin-bottom: 8px; }
+		.theory-section { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+		.theory-section h2 { color: #4a5568; margin-bottom: 25px; font-size: 2rem; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+		.theory-section p { color: #666; margin-bottom: 15px; font-size: 1.1rem; }
+		.formula-box { background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 1.05rem; text-align: center; }
+		.example-box { background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0; border-left: 4px solid #667eea; }
+		.example-box h4 { color: #495057; margin-bottom: 15px; }
+		.example-box p { color: #6c757d; margin-bottom: 10px; }
+		@media (max-width: 768px) { .container { padding: 15px; } .algorithm-header, .working-section, .theory-section { padding: 25px; } .btn { width: 100%; margin-right: 0; } }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<a href="/" class="back-button">← Back to Toolkit</a>
+		<div class="algorithm-header">
+			<h1>🔐 ElGamal</h1>
+			<p>ElGamal is a public-key cryptosystem based on the discrete logarithm problem over a multiplicative group modulo a large prime. It supports probabilistic encryption using a fresh random value for every message.</p>
+		</div>
+
+		<div class="theory-section">
+			<h2>📚 Theory & How It Works</h2>
+			<p>Key generation chooses a large prime p, a generator g of the multiplicative group ℤₚ*, a private key x, and a public key y = gˣ mod p. To encrypt message m (encoded in ℤₚ*), a random k is chosen and the ciphertext is the pair (c₁, c₂) = (gᵏ, m·yᵏ) mod p. Decryption computes m = c₂·(c₁ˣ)⁻¹ mod p.</p>
+			<div class="formula-box">
+				<strong>Summary:</strong><br>
+				Public key: (p, g, y = gˣ mod p), Private key: x<br>
+				Encrypt: choose random k, c₁ = gᵏ mod p, c₂ = m·yᵏ mod p<br>
+				Decrypt: m = c₂ · (c₁ˣ)⁻¹ mod p
+			</div>
+			<div class="example-box">
+				<h4>Example Parameters:</h4>
+				<p>Prime p, generator g, private x, public y = gˣ mod p.</p>
+				<p>Use small demo primes for learning; real security requires large primes.</p>
+			</div>
+		</div>
+
+		<div class="working-section">
+			<h2>🔧 Working with ElGamal</h2>
+			<form id="elgamal-form">
+				<div class="form-group">
+					<label for="prime">Prime p (small demo prime):</label>
+					<input type="number" id="prime" value="30803" min="5">
+				</div>
+				<div class="form-group">
+					<label for="generator">Generator g:</label>
+					<input type="number" id="generator" value="2" min="2">
+				</div>
+				<div class="form-group">
+					<label for="privateKey">Private key x:</label>
+					<input type="number" id="privateKey" value="1234" min="2">
+				</div>
+				<div class="form-group">
+					<label for="message">Message (as number m in 1..p-2):</label>
+					<input type="number" id="message" value="123" min="1">
+				</div>
+				<div class="form-group">
+					<label>Decrypt (ciphertext pair):</label>
+					<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+						<input type="number" id="c1-input" placeholder="c1 = g^k mod p">
+						<input type="number" id="c2-input" placeholder="c2 = m·y^k mod p">
+					</div>
+				</div>
+
+				<div class="checkbox-group">
+					<input type="checkbox" id="educational-mode">
+					<label for="educational-mode">Show Step-by-Step Process</label>
+				</div>
+				<button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+				<button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+				<button type="button" class="btn btn-warning" onclick="generateKeys()">🔑 Generate Keys</button>
+			</form>
+			<div id="result"></div>
+		</div>
+	</div>
+
+	<script>
+		function modExp(base, exp, mod) {
+			let result = 1n;
+			let b = BigInt(base) % BigInt(mod);
+			let e = BigInt(exp);
+			const m = BigInt(mod);
+			while (e > 0n) {
+				if (e & 1n) result = (result * b) % m;
+				b = (b * b) % m;
+				e >>= 1n;
+			}
+			return result;
+		}
+
+		function modInverse(a, mod) {
+			let t = 0n, newT = 1n;
+			let r = BigInt(mod), newR = BigInt(a) % r;
+			while (newR !== 0n) {
+				const q = r / newR;
+				[t, newT] = [newT, t - q * newT];
+				[r, newR] = [newR, r - q * newR];
+			}
+			if (r > 1n) return null; // not invertible
+			if (t < 0n) t += BigInt(mod);
+			return t;
+		}
+
+		function generateKeys() {
+			const p = BigInt(document.getElementById('prime').value);
+			const g = BigInt(document.getElementById('generator').value);
+			const x = BigInt(document.getElementById('privateKey').value);
+			const y = modExp(g, x, p);
+			showResult(`<h4>🔑 Keys Generated</h4><div class="result-content"><p><strong>Public key:</strong> (p=${p}, g=${g}, y=${y})</p><p><strong>Private key:</strong> x=${x}</p></div>`);
+		}
+
+		function encryptText() {
+			const p = BigInt(document.getElementById('prime').value);
+			const g = BigInt(document.getElementById('generator').value);
+			const x = BigInt(document.getElementById('privateKey').value);
+			const y = modExp(g, x, p);
+			const m = BigInt(document.getElementById('message').value);
+			if (m <= 0n || m >= p) { showResult('Message must be in range 1..p-1'); return; }
+			const k = BigInt( Math.floor( Math.random() * 100000 ) + 2 );
+			const c1 = modExp(g, k, p);
+			const yk = modExp(y, k, p);
+			const c2 = (m * yk) % p;
+			let html = `<h4>🔐 ElGamal Encryption</h4><div class="result-content"><p><strong>Public (p,g,y):</strong> (${p}, ${g}, ${y})</p><p><strong>Random k:</strong> ${k}</p><p><strong>ciphertext (c1,c2):</strong> (${c1}, ${c2})</p></div>`;
+			if (document.getElementById('educational-mode').checked) {
+				html += `<div class="step-by-step"><h5>📝 Steps with Calculations:</h5>
+					<ol>
+						<li>y = g^x mod p = ${g}^${x} mod ${p} = <code>${y}</code></li>
+						<li>Pick random k = <code>${k}</code></li>
+						<li>c1 = g^k mod p = ${g}^${k} mod ${p} = <code>${c1}</code></li>
+						<li>y^k mod p = ${y}^${k} mod ${p} = <code>${yk}</code></li>
+						<li>c2 = m · y^k mod p = ${m} · ${yk} mod ${p} = <code>${c2}</code></li>
+					</ol>
+				</div>`;
+			}
+			showResult(html);
+		}
+
+		function decryptText() {
+			const p = BigInt(document.getElementById('prime').value);
+			const g = BigInt(document.getElementById('generator').value);
+			const x = BigInt(document.getElementById('privateKey').value);
+			const c1Field = document.getElementById('c1-input').value;
+			const c2Field = document.getElementById('c2-input').value;
+			if (!c1Field || !c2Field) { showResult('Please enter ciphertext pair c1 and c2'); return; }
+			const c1 = BigInt(c1Field);
+			const c2 = BigInt(c2Field);
+			const s = modExp(c1, x, p);
+			const inv = modInverse(s, p);
+			if (inv === null) { showResult('Inverse does not exist mod p'); return; }
+			const m = (c2 * inv) % p;
+			let html = `<h4>🔓 ElGamal Decryption</h4><div class="result-content"><p><strong>Recovered message m:</strong> ${m}</p></div>`;
+			if (document.getElementById('educational-mode').checked) {
+				html += `<div class="step-by-step"><h5>📝 Steps with Calculations:</h5>
+					<ol>
+						<li>s = c1^x mod p = ${c1}^${x} mod ${p} = <code>${s}</code></li>
+						<li>s⁻¹ mod p = <code>${inv}</code></li>
+						<li>m = c2 · s⁻¹ mod p = ${c2} · ${inv} mod ${p} = <code>${m}</code></li>
+					</ol>
+				</div>`;
+			}
+			showResult(html);
+		}
+
+		function showResult(content) { document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`; }
+	</script>
+</body>
+</html>

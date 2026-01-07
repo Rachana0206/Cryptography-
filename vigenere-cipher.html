@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigenère Cipher - Cryptography Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .algorithm-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .algorithm-header h1 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .algorithm-header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .working-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .working-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-box h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .result-content code {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .step-by-step h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .step-by-step ol {
+            color: #6c757d;
+            padding-left: 20px;
+        }
+
+        .step-by-step li {
+            margin-bottom: 8px;
+        }
+
+        .theory-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .theory-section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .theory-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .formula-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-box h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .example-box p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .key-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .key-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .key-table th,
+        .key-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .algorithm-header, .working-section, .theory-section {
+                padding: 25px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        
+        <div class="algorithm-header">
+            <h1>🔐 Vigenère Cipher</h1>
+            <p>The Vigenère Cipher is a polyalphabetic substitution cipher that uses a keyword to determine which alphabet to use for each letter of the plaintext.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & How It Works</h2>
+            <p>The Vigenère Cipher is more secure than simple substitution ciphers because it uses multiple alphabets. Each letter of the keyword determines which Caesar shift to apply to the corresponding plaintext letter.</p>
+            
+            <div class="formula-box">
+                <strong>Encryption:</strong> E(i) = (P(i) + K(i mod |K|)) mod 26<br>
+                <strong>Decryption:</strong> D(i) = (C(i) - K(i mod |K|) + 26) mod 26<br>
+                Where P(i) is plaintext letter, K(i) is keyword letter, and |K| is keyword length
+            </div>
+
+            <div class="example-box">
+                <h4>Example with Keyword "CRYPTO":</h4>
+                <p><strong>Plaintext:</strong> HELLO WORLD</p>
+                <p><strong>Keyword:</strong> CRYPTOCRYPT</p>
+                <p><strong>Process:</strong> H+C, E+R, L+Y, L+P, O+T, W+O, O+C, R+R, L+Y, D+P</p>
+                <p><strong>Ciphertext:</strong> JVYVQ YQJYF</p>
+            </div>
+
+            <div class="key-table">
+                <h4>Vigenère Table (First few rows):</h4>
+                <table>
+                    <tr>
+                        <th>Key\Plain</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>E</th>
+                        <th>...</th>
+                    </tr>
+                    <tr>
+                        <th>A</th>
+                        <td>A</td>
+                        <td>B</td>
+                        <td>C</td>
+                        <td>D</td>
+                        <td>E</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <th>B</th>
+                        <td>B</td>
+                        <td>C</td>
+                        <td>D</td>
+                        <td>E</td>
+                        <td>F</td>
+                        <td>...</td>
+                    </tr>
+                    <tr>
+                        <th>C</th>
+                        <td>C</td>
+                        <td>D</td>
+                        <td>E</td>
+                        <td>F</td>
+                        <td>G</td>
+                        <td>...</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p><strong>Security:</strong> The Vigenère Cipher is more secure than simple substitution ciphers but can still be broken using techniques like Kasiski examination and frequency analysis.</p>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with Vigenère Cipher</h2>
+            
+            <form id="vigenere-form">
+                <div class="form-group">
+                    <label for="keyword">Keyword:</label>
+                    <input type="text" id="keyword" value="CRYPTO" placeholder="Enter keyword (letters only)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plaintext">Plaintext (Text to Encrypt):</label>
+                    <textarea id="plaintext" placeholder="Enter text to encrypt (letters only)..." required></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Process</label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="encryptText()">🔐 Encrypt</button>
+                <button type="button" class="btn btn-info" onclick="decryptText()">🔓 Decrypt</button>
+                <button type="button" class="btn btn-warning" onclick="analyzeCipher()">🔍 Analyze</button>
+            </form>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function prepareKeyword(keyword, length) {
+            const cleanKeyword = keyword.toUpperCase().replace(/[^A-Z]/g, '');
+            let preparedKeyword = '';
+            for (let i = 0; i < length; i++) {
+                preparedKeyword += cleanKeyword[i % cleanKeyword.length];
+            }
+            return preparedKeyword;
+        }
+
+        function encryptText() {
+            const keyword = document.getElementById('keyword').value;
+            const plaintext = document.getElementById('plaintext').value.toUpperCase();
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!plaintext || !keyword) {
+                showResult('Please enter both keyword and text to encrypt');
+                return;
+            }
+            
+            const preparedKeyword = prepareKeyword(keyword, plaintext.length);
+            let ciphertext = '';
+            let steps = [];
+            
+            for (let i = 0; i < plaintext.length; i++) {
+                const char = plaintext[i];
+                if (char >= 'A' && char <= 'Z') {
+                    const plainCode = char.charCodeAt(0) - 65;
+                    const keyCode = preparedKeyword[i].charCodeAt(0) - 65;
+                    const encryptedCode = (plainCode + keyCode) % 26;
+                    const encryptedChar = String.fromCharCode(encryptedCode + 65);
+                    ciphertext += encryptedChar;
+                    
+                    if (educationalMode) {
+                        steps.push(`${char} + ${preparedKeyword[i]} = ${char}(${plainCode}) + ${preparedKeyword[i]}(${keyCode}) = ${encryptedCode} → ${encryptedChar}`);
+                    }
+                } else {
+                    ciphertext += char;
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔐 Encryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Plaintext:</strong> ${plaintext}</p>
+                    <p><strong>Keyword:</strong> ${keyword}</p>
+                    <p><strong>Prepared Keyword:</strong> <code>${preparedKeyword}</code></p>
+                    <p><strong>Ciphertext:</strong> <code>${ciphertext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function decryptText() {
+            const keyword = document.getElementById('keyword').value;
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase();
+            const educationalMode = document.getElementById('educational-mode').checked;
+            
+            if (!ciphertext || !keyword) {
+                showResult('Please enter both keyword and text to decrypt');
+                return;
+            }
+            
+            const preparedKeyword = prepareKeyword(keyword, ciphertext.length);
+            let plaintext = '';
+            let steps = [];
+            
+            for (let i = 0; i < ciphertext.length; i++) {
+                const char = ciphertext[i];
+                if (char >= 'A' && char <= 'Z') {
+                    const cipherCode = char.charCodeAt(0) - 65;
+                    const keyCode = preparedKeyword[i].charCodeAt(0) - 65;
+                    const decryptedCode = (cipherCode - keyCode + 26) % 26;
+                    const decryptedChar = String.fromCharCode(decryptedCode + 65);
+                    plaintext += decryptedChar;
+                    
+                    if (educationalMode) {
+                        steps.push(`${char} - ${preparedKeyword[i]} = ${char}(${cipherCode}) - ${preparedKeyword[i]}(${keyCode}) = ${decryptedCode} → ${decryptedChar}`);
+                    }
+                } else {
+                    plaintext += char;
+                }
+            }
+            
+            let resultHTML = `
+                <h4>🔓 Decryption Result</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Keyword:</strong> ${keyword}</p>
+                    <p><strong>Prepared Keyword:</strong> <code>${preparedKeyword}</code></p>
+                    <p><strong>Plaintext:</strong> <code>${plaintext}</code></p>
+                </div>
+            `;
+            
+            if (educationalMode && steps.length > 0) {
+                resultHTML += `
+                    <div class="step-by-step">
+                        <h5>📝 Step-by-Step Process:</h5>
+                        <ol>
+                            ${steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            showResult(resultHTML);
+        }
+        
+        function analyzeCipher() {
+            const ciphertext = document.getElementById('plaintext').value.toUpperCase();
+            
+            if (!ciphertext) {
+                showResult('Please enter ciphertext to analyze');
+                return;
+            }
+            
+            // Simple frequency analysis
+            const frequency = {};
+            let totalLetters = 0;
+            
+            for (let char of ciphertext) {
+                if (char >= 'A' && char <= 'Z') {
+                    frequency[char] = (frequency[char] || 0) + 1;
+                    totalLetters++;
+                }
+            }
+            
+            // Sort by frequency
+            const sortedFrequency = Object.entries(frequency)
+                .sort(([,a], [,b]) => b - a)
+                .map(([char, count]) => ({
+                    char,
+                    count,
+                    percentage: ((count / totalLetters) * 100).toFixed(1)
+                }));
+            
+            let resultHTML = `
+                <h4>🔍 Cipher Analysis</h4>
+                <div class="result-content">
+                    <p><strong>Ciphertext:</strong> ${ciphertext}</p>
+                    <p><strong>Total Letters:</strong> ${totalLetters}</p>
+                    <p><strong>Letter Frequencies:</strong></p>
+                    <div class="step-by-step">
+                        ${sortedFrequency.map(item => 
+                            `<p><strong>${item.char}:</strong> ${item.count} (${item.percentage}%)</p>`
+                        ).join('')}
+                    </div>
+                    <p><em>💡 Tip: In English, E, T, A, O, I, N, S, H, R are the most common letters.</em></p>
+                </div>
+            `;
+            
+            showResult(resultHTML);
+        }
+        
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>

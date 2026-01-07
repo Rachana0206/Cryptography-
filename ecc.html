@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECC (Elliptic Curve Cryptography) - Cryptography Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .back-button { display: inline-block; background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; margin-bottom: 20px; transition: all 0.3s ease; }
+        .back-button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .algorithm-header { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .algorithm-header h1 { color: #4a5568; margin-bottom: 15px; font-size: 2.5rem; }
+        .algorithm-header p { color: #666; font-size: 1.1rem; max-width: 800px; margin: 0 auto; }
+        .working-section { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .working-section h2 { color: #4a5568; margin-bottom: 25px; font-size: 2rem; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #495057; font-weight: 600; font-size: 1.1rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 15px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s ease; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .checkbox-group input[type="checkbox"] { width: auto; margin: 0; }
+        .btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-right: 15px; margin-bottom: 15px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .btn-success { background: linear-gradient(45deg, #28a745, #20c997); }
+        .btn-info { background: linear-gradient(45deg, #17a2b8, #6f42c1); }
+        .result-box { background: #ffffff; border-radius: 15px; padding: 25px; margin-top: 25px; border-left: 5px solid #667eea; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .result-box h4 { color: #495057; margin-bottom: 20px; font-size: 1.4rem; }
+        .result-content p { margin-bottom: 12px; color: #6c757d; font-size: 1.05rem; }
+        .result-content code { background: #f8f9fa; padding: 6px 10px; border-radius: 6px; font-family: 'Courier New', monospace; color: #e83e8c; word-break: break-all; font-size: 0.95rem; }
+        .step-by-step { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-top: 20px; border-left: 4px solid #28a745; }
+        .step-by-step h5 { color: #495057; margin-bottom: 12px; font-size: 1.15rem; }
+        .step-by-step ol { color: #6c757d; padding-left: 20px; }
+        .step-by-step li { margin-bottom: 8px; }
+        .theory-section { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .theory-section h2 { color: #4a5568; margin-bottom: 25px; font-size: 2rem; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .theory-section p { color: #666; margin-bottom: 15px; font-size: 1.1rem; }
+        .formula-box { background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 1.05rem; text-align: center; }
+        @media (max-width: 768px) { .container { padding: 15px; } .algorithm-header, .working-section, .theory-section { padding: 25px; } .btn { width: 100%; margin-right: 0; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to Toolkit</a>
+        <div class="algorithm-header">
+            <h1>🔐 ECC (Elliptic Curve Cryptography)</h1>
+            <p>Elliptic Curve Cryptography works over points on curves of the form y² = x³ + ax + b over a finite field modulo a prime p. It enables compact keys with strong security and underpins ECDH and ECDSA.</p>
+        </div>
+
+        <div class="theory-section">
+            <h2>📚 Theory & Curve</h2>
+            <p>Curve over ℤₚ: y² ≡ x³ + a·x + b (mod p). A base point G on the curve generates a cyclic subgroup. Private key d ∈ [1, n−1]; public key Q = d·G via repeated point addition (double-and-add).</p>
+            <div class="formula-box">
+                Scalar multiplication (double-and-add):<br>
+                - If k's bit is 1: R = R + P; Always: P = 2P<br>
+                - Start R = O (point at infinity), P = G, iterate bits of k from MSB to LSB.
+            </div>
+        </div>
+
+        <div class="working-section">
+            <h2>🔧 Working with ECC</h2>
+            <form id="ecc-form">
+                <div class="form-group">
+                    <label for="prime">Prime p:</label>
+                    <input type="number" id="prime" value="9739" min="5">
+                </div>
+                <div class="form-group">
+                    <label for="a">Curve parameter a:</label>
+                    <input type="number" id="a" value="497">
+                </div>
+                <div class="form-group">
+                    <label for="b">Curve parameter b:</label>
+                    <input type="number" id="b" value="1768">
+                </div>
+                <div class="form-group">
+                    <label for="gx">Base point Gx:</label>
+                    <input type="number" id="gx" value="180">
+                </div>
+                <div class="form-group">
+                    <label for="gy">Base point Gy:</label>
+                    <input type="number" id="gy" value="855">
+                </div>
+                <div class="form-group">
+                    <label for="d">Private key d:</label>
+                    <input type="number" id="d" value="1337" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="qbx">Peer public Qb.x (for ECDH demo):</label>
+                    <input type="number" id="qbx" value="711">
+                </div>
+                <div class="form-group">
+                    <label for="qby">Peer public Qb.y (for ECDH demo):</label>
+                    <input type="number" id="qby" value="2550">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="educational-mode">
+                    <label for="educational-mode">Show Step-by-Step Calculations</label>
+                </div>
+                <button type="button" class="btn btn-success" onclick="generatePublicKey()">🔑 Generate Public Key (Q = d·G)</button>
+                <button type="button" class="btn btn-info" onclick="computeECDH()">🤝 ECDH Shared Secret (S = d·Qb)</button>
+            </form>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Helpers
+        function toBigInt(v) { return BigInt(v); }
+        function mod(a, m) { const x = ((a % m) + m) % m; return x; }
+        function modInv(a, m) {
+            // Extended Euclidean Algorithm
+            let t = 0n, newT = 1n;
+            let r = m, newR = mod(a, m);
+            while (newR !== 0n) {
+                const q = r / newR;
+                [t, newT] = [newT, t - q * newT];
+                [r, newR] = [newR, r - q * newR];
+            }
+            if (r !== 1n) return null;
+            if (t < 0n) t += m;
+            return t;
+        }
+
+        function isInfinity(P) { return !P || P.inf; }
+        function pointToStr(P) { return isInfinity(P) ? 'O' : `(${P.x}, ${P.y})`; }
+
+        function pointAdd(P, Q, a, p) {
+            if (isInfinity(P)) return Q; if (isInfinity(Q)) return P;
+            if (P.x === Q.x && mod(P.y + Q.y, p) === 0n) return { inf: true };
+            let m;
+            if (P.x === Q.x && P.y === Q.y) {
+                // slope for doubling: (3x^2 + a) / (2y)
+                const numerator = mod(3n * P.x * P.x + a, p);
+                const denominator = modInv(mod(2n * P.y, p), p);
+                if (denominator === null) return { inf: true };
+                m = mod(numerator * denominator, p);
+            } else {
+                const numerator = mod(Q.y - P.y, p);
+                const denominator = modInv(mod(Q.x - P.x, p), p);
+                if (denominator === null) return { inf: true };
+                m = mod(numerator * denominator, p);
+            }
+            const rx = mod(m*m - P.x - Q.x, p);
+            const ry = mod(m * (P.x - rx) - P.y, p);
+            return { x: rx, y: ry };
+        }
+
+        function scalarMult(k, P, a, p, withTrace=false) {
+            let N = { ...P };
+            let R = { inf: true };
+            const steps = [];
+            const bits = k.toString(2);
+            for (let i = 0; i < bits.length; i++) {
+                // Always double R
+                if (!isInfinity(R)) {
+                    const before = { ...R };
+                    R = pointAdd(R, R, a, p);
+                    if (withTrace) steps.push(`Double: ${pointToStr(before)} + ${pointToStr(before)} = ${pointToStr(R)}`);
+                }
+                // If bit is 1, add N
+                if (bits[i] === '1') {
+                    const before = { ...R };
+                    R = pointAdd(R, N, a, p);
+                    if (withTrace) steps.push(`Add: ${pointToStr(before)} + ${pointToStr(N)} = ${pointToStr(R)}`);
+                }
+                // Next: N = 2N
+                const nBefore = { ...N };
+                N = pointAdd(N, N, a, p);
+                if (withTrace) steps.push(`Prepare next: 2N where N was ${pointToStr(nBefore)} -> ${pointToStr(N)}`);
+            }
+            return { R, steps, bits };
+        }
+
+        function readParams() {
+            const p = toBigInt(document.getElementById('prime').value);
+            const a = toBigInt(document.getElementById('a').value);
+            const b = toBigInt(document.getElementById('b').value);
+            const G = { x: toBigInt(document.getElementById('gx').value), y: toBigInt(document.getElementById('gy').value) };
+            return { p, a, b, G };
+        }
+
+        function generatePublicKey() {
+            const { p, a, b, G } = readParams();
+            const d = toBigInt(document.getElementById('d').value);
+            const educational = document.getElementById('educational-mode').checked;
+            const { R: Q, steps, bits } = scalarMult(d, G, a, p, educational);
+
+            let html = `<h4>🔑 Public Key Generation</h4>` +
+                `<div class="result-content">` +
+                `<p><strong>Curve:</strong> y² ≡ x³ + ${a}x + ${b} (mod ${p})</p>` +
+                `<p><strong>Base G:</strong> ${pointToStr(G)}</p>` +
+                `<p><strong>Private d:</strong> ${d} (binary ${d.toString(2)})</p>` +
+                `<p><strong>Public Q = d·G:</strong> <code>${pointToStr(Q)}</code></p>` +
+                `</div>`;
+
+            if (educational) {
+                html += `<div class="step-by-step"><h5>📝 Double-and-Add Trace (bits ${bits}):</h5><ol>` +
+                        steps.map(s => `<li>${s}</li>`).join('') + `</ol></div>`;
+            }
+            showResult(html);
+        }
+
+        function computeECDH() {
+            const { p, a, b, G } = readParams();
+            const d = toBigInt(document.getElementById('d').value);
+            const Qb = { x: toBigInt(document.getElementById('qbx').value), y: toBigInt(document.getElementById('qby').value) };
+            const educational = document.getElementById('educational-mode').checked;
+            const { R: S, steps, bits } = scalarMult(d, Qb, a, p, educational);
+
+            let html = `<h4>🤝 ECDH Shared Secret</h4>` +
+                `<div class="result-content">` +
+                `<p><strong>Peer public Qb:</strong> ${pointToStr(Qb)}</p>` +
+                `<p><strong>Private d:</strong> ${d} (binary ${d.toString(2)})</p>` +
+                `<p><strong>Shared S = d·Qb:</strong> <code>${pointToStr(S)}</code></p>` +
+                `</div>`;
+            if (educational) {
+                html += `<div class="step-by-step"><h5>📝 Double-and-Add Trace (bits ${bits}):</h5><ol>` +
+                        steps.map(s => `<li>${s}</li>`).join('') + `</ol></div>`;
+            }
+            showResult(html);
+        }
+
+        function showResult(content) {
+            document.getElementById('result').innerHTML = `<div class="result-box">${content}</div>`;
+        }
+    </script>
+</body>
+</html>
